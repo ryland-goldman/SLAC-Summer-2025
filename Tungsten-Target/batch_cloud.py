@@ -82,8 +82,10 @@ if "batchdata.csv" in os.listdir():
     d = df.T.to_dict()
     for key in d.keys(): pairs_done.append([d[key]["Energy"],d[key]["Thickness"]])
 
+pairs_done=np.array(pairs_done)
 for combo in allcombos:
-    if combo in pairs_done: continue
+    combo=np.array(combo)
+    if (combo == pairs_done).all(axis=1).any(): continue
     tasks.put(combo)
 
 def worker(threadnumber):
