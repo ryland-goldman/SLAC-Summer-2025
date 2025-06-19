@@ -22,15 +22,15 @@ place Target z=200
 
 # This virtualdetector catches what comes out of the target to the back;
 # note the hole for the incoming beam; make it yellow
-virtualdetector DetBackward innerRadius=0.5 radius=1000 length=1 color=1,1,0,0.2 filename=$FNB
+virtualdetector DetBackward innerRadius=0.5 radius=1000 length=1 color=1,1,0,0.2 filename=$FNB format=ascii
 place DetBackward z=99
 
 # This virtualdetector catches what comes out of the target to the side,
 # one meter away; make it blue
-virtualdetector DetSideways innerRadius=1000 radius=1001 length=201 color=0,0,1,0.2 filename=$FNS
+virtualdetector DetSideways innerRadius=1000 radius=1001 length=201 color=0,0,1,0.2 filename=$FNS format=ascii
 place DetSideways z=200
 
 # This virtualdetector catches what comes out of the target in the forward
 # direction; make it green
-virtualdetector DetForward radius=1000 length=1 color=0,1,0,0.2 filename=$FNF
+virtualdetector DetForward radius=1000 length=1 color=0,1,0,0.2 filename=$FNF format=ascii
 place DetForward z=301
