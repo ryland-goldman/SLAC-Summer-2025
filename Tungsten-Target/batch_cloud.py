@@ -1,13 +1,5 @@
-import requests, subprocess
-def spot_terminated():
-    response = requests.get("http://169.254.169.254/latest/meta-data/spot/termination-time", timeout=1)
-    return response.status_code == 200
-def print2(strout=""):
-    with output_lock_2:
-        with open("stdout.txt","a") as f: f.write(strout+"\n")
-print2("===")
-num_threads = int(subprocess.run(["nproc"], capture_output=True, text=True).stdout)
-
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -19,10 +11,16 @@ import os
 import json
 import threading
 import queue
-
-import warnings
-warnings.filterwarnings("ignore")
+import requests, subprocess
 output_lock_2 = threading.Lock()
+def spot_terminated():
+    response = requests.get("http://169.254.169.254/latest/meta-data/spot/termination-time", timeout=1)
+    return response.status_code == 200
+def print2(strout=""):
+    with output_lock_2:
+        with open("stdout.txt","a") as f: f.write(strout+"\n")
+print2("===")
+num_threads = int(subprocess.run(["nproc"], capture_output=True, text=True).stdout)
 
 # Constants
 electron_mass = 0.511  # MeV/c^2
