@@ -5,7 +5,6 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from scipy.optimize import curve_fit
 import subprocess
 import os
 import json
@@ -118,20 +117,6 @@ def run_sum(energy, thickness, threadnumber):
         energy_bins = np.linspace(0, 100, 201)
         positron_E = np.array(list(positron_E))
 
-        counts, bin_edges, _ = plt.hist(positron_E, bins=energy_bins, color='blue', alpha=0.6, label='Positrons')
-        bin_centers = 0.5 * (bin_edges[1:] + bin_edges[:-1])
-
-        def exp_func(x, A, p0): return A * np.exp(-x / p0)
-
-        mask = counts > 0
-        fit_x = bin_centers[mask]
-        fit_y = counts[mask]
-
-        try:
-            popt, pcov = curve_fit(exp_func, fit_x, fit_y, p0=[1, 10])
-        except Exception:
-            popt = [0,0]
-
 
         # save parsed data
         with output_lock:
@@ -144,7 +129,7 @@ def run_sum(energy, thickness, threadnumber):
             data = []
             if os.path.exists("batchdata.json"):
                 with open("batchdata.json","r") as file: data = json.load(file)
-            data.append({"Energy":energy,"Thickness":thickness,"A":popt[0],"x0":popt[1],"Raw":positron_E})
+            data.append({"Energy":energy,"Thickness":thickness,"Raw":positron_E})
             with open("batchdata.json","w") as file: json.dump(convert_to_builtin_type(data), file, indent=4)
 
             i += 1
