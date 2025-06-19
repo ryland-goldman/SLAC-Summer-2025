@@ -1,10 +1,11 @@
-import requests, time
+import requests, subprocess
 def spot_terminated():
     response = requests.get("http://169.254.169.254/latest/meta-data/spot/termination-time", timeout=1)
     return response.status_code == 200
-def print2(strout):
+def print2(strout=""):
     with output_lock_2:
         with open("stdout.txt","a") as f: f.write(strout+"\n")
+print2("===")
 num_threads = int(subprocess.run(["nproc"], capture_output=True, text=True).stdout)
 
 import matplotlib
@@ -21,6 +22,7 @@ import queue
 
 import warnings
 warnings.filterwarnings("ignore")
+output_lock_2 = threading.Lock()
 
 # Constants
 electron_mass = 0.511  # MeV/c^2
@@ -31,7 +33,7 @@ event_count = 100000
 # energy min/max in MeV
 min_E = 76
 max_E = 150
-energy_range = np.linspace(min_E, max_E, 75)
+energy_range = np.linspace(min_E, max_E, 150)
 
 # tungsten thickness in mm
 min_thickness = 0.5
@@ -80,7 +82,7 @@ pairs_done = []
 if "batchdata.csv" in os.listdir():
     df = pd.read_csv("batchdata.csv")
     d = df.T.to_dict()
-    for item in d: pairs_done.append([item["Energy"],item["Thickness"]])
+    for key in d.keys(): pairs_done.append([d[key]["Energy"],d[key]["Thickness"]])
 
 for combo in allcombos:
     if combo in pairs_done: continue
