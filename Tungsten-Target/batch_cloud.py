@@ -2,8 +2,7 @@ import requests, time
 def spot_terminated():
     response = requests.get("http://169.254.169.254/latest/meta-data/spot/termination-time", timeout=1)
     return response.status_code == 200
-def print2(args*):
-    strout = "".join(args*)
+def print2(strout):
     with output_lock_2:
         with open("stdout.txt","a") as f: f.write(strout+"\n")
 num_threads = int(subprocess.run(["nproc"], capture_output=True, text=True).stdout)
