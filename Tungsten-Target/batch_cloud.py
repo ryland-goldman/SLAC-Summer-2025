@@ -126,20 +126,20 @@ def run_sum(energy, thickness, threadnumber):
 
 
         # save parsed data
-        with output_lock:
-            try: df = pd.read_csv("batchdata.csv")
-            except FileNotFoundError: df = pd.DataFrame(columns=["Energy","Thickness","Count","Rate"])
-            df = pd.concat([df, pd.DataFrame([{"Energy":energy,"Thickness":thickness,"Count":len(positron_E),"Rate":len(positron_E)/event_count}])], ignore_index=True)
-            df.to_csv("batchdata.csv",index=False)
+        # with output_lock:
+        try: df = pd.read_csv(f"batchdata{threadnumber}.csv")
+        except FileNotFoundError: df = pd.DataFrame(columns=["Energy","Thickness","Count","Rate"])
+        df = pd.concat([df, pd.DataFrame([{"Energy":energy,"Thickness":thickness,"Count":len(positron_E),"Rate":len(positron_E)/event_count}])], ignore_index=True)
+        df.to_csv(f"batchdata{threadnumber}.csv",index=False)
 
-            # save raw data
-            #data = []
-            #if os.path.exists("batchdata.json"):
-            #    with open("batchdata.json","r") as file: data = json.load(file)
-            #data.append({"Energy":energy,"Thickness":thickness,"Raw":positron_E})
-            #with open("batchdata.json","w") as file: json.dump(convert_to_builtin_type(data), file, indent=4)
+        # save raw data
+        #data = []
+        #if os.path.exists("batchdata.json"):
+        #    with open("batchdata.json","r") as file: data = json.load(file)
+        #data.append({"Energy":energy,"Thickness":thickness,"Raw":positron_E})
+        #with open("batchdata.json","w") as file: json.dump(convert_to_builtin_type(data), file, indent=4)
 
-            i += 1
+        i += 1
 
     except Exception as e:
         print2(f"Running iteration {i} (Thread {threadnumber}, {energy} MeV, {thickness} mm)... failed with exception {e}")
