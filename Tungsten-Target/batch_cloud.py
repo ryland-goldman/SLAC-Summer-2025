@@ -84,7 +84,8 @@ if "batchdata.csv" in os.listdir():
 pairs_done=np.array(pairs_done)
 for combo in allcombos:
     combo=np.array(combo)
-    if (combo == pairs_done).all(axis=1).any(): continue
+    if not len(pairs_done)==0:
+        if (combo == pairs_done).all(axis=1).any(): continue
     tasks.put(combo)
 
 def worker(threadnumber):
