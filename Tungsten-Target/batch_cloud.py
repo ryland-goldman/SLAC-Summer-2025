@@ -133,11 +133,11 @@ def run_sum(energy, thickness, threadnumber):
             df.to_csv("batchdata.csv",index=False)
 
             # save raw data
-            data = []
-            if os.path.exists("batchdata.json"):
-                with open("batchdata.json","r") as file: data = json.load(file)
-            data.append({"Energy":energy,"Thickness":thickness,"Raw":positron_E})
-            with open("batchdata.json","w") as file: json.dump(convert_to_builtin_type(data), file, indent=4)
+            #data = []
+            #if os.path.exists("batchdata.json"):
+            #    with open("batchdata.json","r") as file: data = json.load(file)
+            #data.append({"Energy":energy,"Thickness":thickness,"Raw":positron_E})
+            #with open("batchdata.json","w") as file: json.dump(convert_to_builtin_type(data), file, indent=4)
 
             i += 1
 
