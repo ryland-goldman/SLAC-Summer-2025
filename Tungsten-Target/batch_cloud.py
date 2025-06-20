@@ -95,7 +95,7 @@ def worker(threadnumber):
     while True:
         if spot_terminated(): break
         task = tasks.get()
-        if task == None:
+        if not type(task) in [np.ndarray,list]:
             tasks.task_done()
             break
         run_sum(task[0], task[1], threadnumber)
