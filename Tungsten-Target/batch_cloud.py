@@ -93,9 +93,13 @@ for combo in allcombos:
 
 def worker(threadnumber):
     while True:
-        if spot_terminated(): break
+        if spot_terminated():
+            print2(f"{threadnumber} terminated due to spot stop")
+            break
         task = tasks.get()
+        print2(f"{threadnumber} picked up task {task}")
         if not type(task) in [np.ndarray,list]:
+            print2(f"{threadnumber} terminated due to tasks empty")
             tasks.task_done()
             break
         run_sum(task[0], task[1], threadnumber)
