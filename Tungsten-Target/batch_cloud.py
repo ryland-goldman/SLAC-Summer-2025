@@ -13,8 +13,10 @@ import queue
 import requests, subprocess
 output_lock_2 = threading.Lock()
 def spot_terminated():
-    response = requests.get("http://169.254.169.254/latest/meta-data/spot/termination-time", timeout=1)
-    return response.status_code == 200
+    try:
+        response = requests.get("http://169.254.169.254/latest/meta-data/spot/termination-time", timeout=1)
+        return response.status_code == 200
+    except Exception: return False
 def print2(strout=""):
     with output_lock_2:
         with open("stdout.txt","a") as f: f.write(strout+"\n")
