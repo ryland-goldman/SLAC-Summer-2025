@@ -13,6 +13,7 @@ import queue
 import requests, subprocess
 output_lock_2 = threading.Lock()
 def spot_terminated():
+    if "stop" in os.listdir(): return True
     try:
         response = requests.get("http://169.254.169.254/latest/meta-data/spot/termination-time", timeout=1)
         return response.status_code == 200
