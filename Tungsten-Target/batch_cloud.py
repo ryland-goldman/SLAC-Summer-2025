@@ -91,9 +91,12 @@ for combo in allcombos:
     tasks.put(combo)
 
 def worker(threadnumber):
-    while not tasks.empty():
+    while True:
         if spot_terminated(): break
         task = tasks.get()
+        if task == None:
+            tasks.task_done()
+            break
         run_sum(task[0], task[1], threadnumber)
         tasks.task_done()
 
@@ -145,6 +148,7 @@ def run_sum(energy, thickness, threadnumber):
 output_lock = threading.Lock()
 threads = []
 for i in range(num_threads):
+    tasks.put(None)
     thread = threading.Thread(target=worker, args=(i,))
     thread.start()
     threads.append(thread)
