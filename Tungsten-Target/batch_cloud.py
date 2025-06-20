@@ -28,9 +28,9 @@ electron_mass = 0.511  # MeV/c^2
 event_count = 100000
 
 # energy min/max in MeV
-min_E = 76
+min_E = 131
 max_E = 150
-energy_range = np.linspace(min_E, max_E, 150)
+energy_range = np.linspace(min_E, max_E, 20)
 
 # tungsten thickness in mm
 min_thickness = 0.5
