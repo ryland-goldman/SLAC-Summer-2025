@@ -1,35 +1,45 @@
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import json
 
-event_count = 20000
+with open("batchdata.json","r") as f:
+    raw_data = json.load(f)
 
-### Load Data
+raw_data = sorted(raw_data, key=lambda x: x["Angle"])
 
-df = pd.read_csv("batchdata.csv")
-df = df.pivot(index="Energy", columns="Thickness", values="Count")
-data = df.to_numpy() / event_count
+max_counts = []
+for measurement in raw_data:
+    positron_E = measurement["Raw"]
+    
+    energy_bins = np.linspace(0, 100, 201)
+    positron_E = np.array(list(positron_E))
 
+    counts, bin_edges, _ = plt.hist(positron_E, bins=energy_bins, color='blue', alpha=0.6, label='Positrons')
+    bin_centers = 0.5 * (bin_edges[1:] + bin_edges[:-1])
+    
+    max_counts.append(max(counts))
 
+prev_measurement = None
+for measurement in raw_data:
+    plt.clf()
 
-### Heatmap
+    positron_E = measurement["Raw"]
+    angle = measurement["Angle"]
+    
+    energy_bins = np.linspace(0, 100, 201)
+    positron_E = np.array(list(positron_E))
 
-fig, ax = plt.subplots(figsize=(8, 8))
-im = ax.imshow(data, cmap='viridis', aspect='auto', origin='upper')
+    counts, bin_edges, _ = plt.hist(positron_E, bins=energy_bins, color='blue', alpha=0.6, label='Positrons')
+    bin_centers = 0.5 * (bin_edges[1:] + bin_edges[:-1])
 
-x_labels = list(df.columns)
-y_labels = list(df.index)
+    if not type(prev_measurement) == type(None):
+        plt.hist(prev_measurement, bins=energy_bins, color='red', alpha=0.6, label='Positrons')
+    
+    prev_measurement = positron_E
 
-ax.set_xticks(np.arange(data.shape[1]))
-ax.set_xticklabels(x_labels, rotation=45, ha='right', fontsize=9)
-ax.set_yticks(np.arange(data.shape[0]))
-ax.set_yticklabels(y_labels, fontsize=9)
-
-ax.set_xlabel('Tungsten Thickness (mm)', labelpad=8, fontsize=11)
-ax.set_ylabel('Energy (MeV)',   labelpad=8, fontsize=11)
-
-cbar = ax.figure.colorbar(im, ax=ax, shrink=0.80)
-cbar.set_label('Positron Fraction')
-
-plt.tight_layout()
-plt.show()
+    #plt.ylim(0,max(max_counts))
+    plt.title(f"Energy Distribution at $\\theta={round(angle,1)}^\circ$")
+    plt.xlabel('Pz [MeV/c]')
+    plt.ylabel('Count')
+    plt.savefig(f'im0-{round(angle,1)}.png')

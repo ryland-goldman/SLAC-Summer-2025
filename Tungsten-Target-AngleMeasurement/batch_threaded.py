@@ -20,7 +20,7 @@ num_threads = 12
 electron_mass = 0.511  # MeV/c^2
 
 # number of events per run
-event_count = 100000
+event_count = 1000000
 
 # energy in MeV
 energy = 100
@@ -65,7 +65,7 @@ def worker(threadnumber):
 
 def run_sum(energy, thickness, angle, threadnumber):
     global i
-    result = subprocess.run(["C:\\Program Files\\Muons, Inc\\G4beamline\\bin\\g4bl.exe","TungstenTarget.g4bl",f"KE={float(energy)}",f"thickness={thickness}",f"detectorRadius={100*math.tan(angle)}",f"detectorRadiusB={100*math.tan(angle)+1}",f"nEvents={event_count}", f"FNB=DetBackward{threadnumber}", f"FNF=DetForward{threadnumber}", f"FNS=DetSideways{threadnumber}"], capture_output=True, text=True)
+    result = subprocess.run(["C:\\Program Files\\Muons, Inc\\G4beamline\\bin\\g4bl.exe","TungstenTarget.g4bl",f"KE={float(energy)}",f"thickness={thickness}",f"detectorRadius={100*math.tan(angle)}",f"detectorRadiusB={100*math.tan(angle)+1}",f"nEvents={event_count}", f"FNB=Detbackward{threadnumber}", f"FNF=Detforward{threadnumber}", f"FNS=Detsideways{threadnumber}"], capture_output=True, text=True)
     #print(result.stdout)
 
     if not result.returncode == 0:
@@ -80,7 +80,7 @@ def run_sum(energy, thickness, angle, threadnumber):
         hist_data = {}
         num_pos = {}
 
-        df = pd.read_csv(f"DetForward{threadnumber}.txt", skiprows=1, names='x y z Px Py Pz t PDGid EventID TrackID ParentID Weight'.split(' '), delim_whitespace=True ).drop(index=0)
+        df = pd.read_csv(f"Detforward{threadnumber}.txt", skiprows=1, names='x y z Px Py Pz t PDGid EventID TrackID ParentID Weight'.split(' '), delim_whitespace=True ).drop(index=0)
 
         electrons = df[df['PDGid'] == 11]
         positrons = df[df['PDGid'] == -11]
