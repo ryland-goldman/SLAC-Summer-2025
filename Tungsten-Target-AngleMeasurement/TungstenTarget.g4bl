@@ -1,0 +1,38 @@
+#	tantalumTarget.g4bl - 100 MeV proton beam into a tantalum target
+
+# The "default" physics list is QGSP_BERT
+physics FTFP_BERT
+
+# the beam is 100 MeV kinetic energy, the mass of an electron is 0.511 MeV/c^2
+param M=0.511 KE=$KE
+param P=sqrt(($M+$KE)*($M+$KE)-$M*$M)
+
+# a zero-emittance beam is unrealistic, but simple; it easily fits through
+# a 1 mm hole in the backward detector. It emanates from z=0.
+beam gaussian meanMomentum=$P nEvents=$nEvents particle=e-
+
+# the target is a tungsten square 50 mm wxh; make it red
+#   box Target width=50 height=50 length=$thickness material=W color=1,0,0
+# actually, the target is just going to be a cylinder with the given radius
+cylinder Target outerRadius=$detectorRadius length=$thickness material=W color=1,0,0
+place Target z=200
+# trackcuts keep=gamma,e-,e+
+
+# These three virtualdetector-s catch everything that comes out, except for
+# a 1mm hole for the incoming beam. Note the 0.5 mm clearance at each end of
+# the target, and the 201 mm length of the cylinder to match corners.
+
+# This virtualdetector catches what comes out of the target to the back;
+# note the hole for the incoming beam; make it yellow
+virtualdetector DetBackward innerRadius=0.5 radius=$detectorRadius length=1 color=1,1,0,0.2 filename=$FNB format=ascii
+place DetBackward z=99
+
+# This virtualdetector catches what comes out of the target to the side,
+# one meter away; make it blue
+virtualdetector DetSideways innerRadius=$detectorRadius radius=$detectorRadiusB length=201 color=0,0,1,0.2 filename=$FNS format=ascii
+place DetSideways z=200
+
+# This virtualdetector catches what comes out of the target in the forward
+# direction; make it green
+virtualdetector DetForward radius=$detectorRadius length=1 color=0,1,0,0.2 filename=$FNF format=ascii
+place DetForward z=301
