@@ -4,6 +4,8 @@ import pandas as pd
 import json
 import matplotlib.pyplot as plt
 import scipy.interpolate
+import os
+import pickle as pkl
 
 def bounded_normal(mean,std,size):
     samples=np.random.normal(mean,std,size)
@@ -17,23 +19,33 @@ input_distribution = bounded_normal(50,20,100000) # generate uniformly random di
 
 num_events = 1000000
 
-df = pd.read_csv("batchdata.csv")
-with open("batchdata.json","r") as f: raw_data = json.load(f)
-
 energy_bins = np.linspace(0, 100, 201)
 bin_centers = 0.5 * (energy_bins[1:] + energy_bins[:-1])
-energies = []
-bins = []
 
-for measurement in raw_data:
-    incident_E = measurement["Energy"]
-    positron_E = measurement["Raw"]
-    counts, bin_edges, _ = plt.hist(positron_E, bins=energy_bins, color='blue', alpha=0.6, label='Positrons')
+try:
+    assert "energy_interpolation.pkl" in os.listdir()
+    with open("energy_interpolation.pkl","rb") as f: c,x,axis,extrap = pkl.load(f)
+    dist_at_E = scipy.interpolate.PPoly(c,x,axis=axis,extrapolate=extrap)
 
-    energies.append(incident_E)
-    bins.append(counts)
+except Exception as e:
+    print(e)
+    df = pd.read_csv("batchdata.csv")
+    with open("batchdata.json","r") as f: raw_data = json.load(f)
 
-dist_at_E = scipy.interpolate.CubicSpline(energies, bins, bc_type="natural")
+    energies = []
+    bins = []
+
+    for measurement in raw_data:
+        incident_E = measurement["Energy"]
+        positron_E = measurement["Raw"]
+        counts, bin_edges, _ = plt.hist(positron_E, bins=energy_bins, color='blue', alpha=0.6, label='Positrons')
+
+        energies.append(incident_E)
+        bins.append(counts)
+
+    dist_at_E = scipy.interpolate.CubicSpline(energies, bins, bc_type="natural")
+    with open("energy_interpolation.pkl","wb") as f: pkl.dump((dist_at_E.c,dist_at_E.x,dist_at_E.axis,dist_at_E.extrapolate), f, protocol=pkl.HIGHEST_PROTOCOL)
+
 output_dist = np.array(dist_at_E(input_distribution)).sum(axis=0) / num_events
 plt.close()
 
