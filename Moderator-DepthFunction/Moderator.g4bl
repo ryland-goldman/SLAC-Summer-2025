@@ -1,0 +1,71 @@
+physics FTFP_BERT
+randomseed Set 1
+
+param KE=0.5
+
+param nEvents=100000 FNF=DetFordward1 FNDS=DetSecond1 thickness=0.05
+
+param M=0.511 KE=$KE
+param P=sqrt(($M+$KE)*($M+$KE)-$M*$M)
+beam gaussian meanMomentum=$P nEvents=$nEvents particle=e+ x=-1 beamXp=$P/sqrt(2)
+
+box Moderator width=50 height=50 length=$thickness material=W color=1,0,0
+place Moderator z=1
+
+zntuple DetForward z=1.5 filename=$FNF format=ascii
+zntuple Det1 z=0.976 filename=Det1 format=ascii
+zntuple Det2 z=0.977 filename=Det2 format=ascii
+zntuple Det3 z=0.978 filename=Det3 format=ascii
+zntuple Det4 z=0.979 filename=Det4 format=ascii
+zntuple Det5 z=0.98 filename=Det5 format=ascii
+zntuple Det6 z=0.981 filename=Det6 format=ascii
+zntuple Det7 z=0.982 filename=Det7 format=ascii
+zntuple Det8 z=0.983 filename=Det8 format=ascii
+zntuple Det9 z=0.984 filename=Det9 format=ascii
+zntuple Det10 z=0.985 filename=Det10 format=ascii
+zntuple Det11 z=0.986 filename=Det11 format=ascii
+zntuple Det12 z=0.987 filename=Det12 format=ascii
+zntuple Det13 z=0.988 filename=Det13 format=ascii
+zntuple Det14 z=0.989 filename=Det14 format=ascii
+zntuple Det15 z=0.99 filename=Det15 format=ascii
+zntuple Det16 z=0.991 filename=Det16 format=ascii
+zntuple Det17 z=0.992 filename=Det17 format=ascii
+zntuple Det18 z=0.993 filename=Det18 format=ascii
+zntuple Det19 z=0.994 filename=Det19 format=ascii
+zntuple Det20 z=0.995 filename=Det20 format=ascii
+zntuple Det21 z=0.996 filename=Det21 format=ascii
+zntuple Det22 z=0.997 filename=Det22 format=ascii
+zntuple Det23 z=0.998 filename=Det23 format=ascii
+zntuple Det24 z=0.999 filename=Det24 format=ascii
+zntuple Det25 z=1.0 filename=Det25 format=ascii
+zntuple Det26 z=1.001 filename=Det26 format=ascii
+zntuple Det27 z=1.002 filename=Det27 format=ascii
+zntuple Det28 z=1.003 filename=Det28 format=ascii
+zntuple Det29 z=1.004 filename=Det29 format=ascii
+zntuple Det30 z=1.005 filename=Det30 format=ascii
+zntuple Det31 z=1.006 filename=Det31 format=ascii
+zntuple Det32 z=1.007 filename=Det32 format=ascii
+zntuple Det33 z=1.008 filename=Det33 format=ascii
+zntuple Det34 z=1.009 filename=Det34 format=ascii
+zntuple Det35 z=1.01 filename=Det35 format=ascii
+zntuple Det36 z=1.011 filename=Det36 format=ascii
+zntuple Det37 z=1.012 filename=Det37 format=ascii
+zntuple Det38 z=1.013 filename=Det38 format=ascii
+zntuple Det39 z=1.014 filename=Det39 format=ascii
+zntuple Det40 z=1.015 filename=Det40 format=ascii
+zntuple Det41 z=1.016 filename=Det41 format=ascii
+zntuple Det42 z=1.017 filename=Det42 format=ascii
+zntuple Det43 z=1.018 filename=Det43 format=ascii
+zntuple Det44 z=1.019 filename=Det44 format=ascii
+zntuple Det45 z=1.02 filename=Det45 format=ascii
+zntuple Det46 z=1.021 filename=Det46 format=ascii
+zntuple Det47 z=1.022 filename=Det47 format=ascii
+zntuple Det48 z=1.023 filename=Det48 format=ascii
+zntuple Det49 z=1.024 filename=Det49 format=ascii
+zntuple DetSecond z=0.5 filename=$FNDS format=ascii
+
+param deltaChord=0.001
+param deltaIntersection=0.0001
+param deltaOneStep=0.0001
+param minStep=0.00005
+param maxStep=0.005
