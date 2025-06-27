@@ -1,9 +1,10 @@
-physics FTFP_BERT
-randomseed Set 1
+physics FTFP_BERT_EMZ
+randomseed Set 2
 
+# use 500 keV beam
 param KE=0.5
 
-param nEvents=100000 FNF=DetFordward1 FNDS=DetSecond1 thickness=0.05
+param nEvents=100000 thickness=0.05
 
 param M=0.511 KE=$KE
 param P=sqrt(($M+$KE)*($M+$KE)-$M*$M)
@@ -12,7 +13,7 @@ beam gaussian meanMomentum=$P nEvents=$nEvents particle=e+ x=-1 beamXp=$P/sqrt(2
 box Moderator width=50 height=50 length=$thickness material=W color=1,0,0
 place Moderator z=1
 
-zntuple DetForward z=1.5 filename=$FNF format=ascii
+zntuple DetNeg5 z=0.0.97 filename=DetNeg5 format=ascii
 zntuple Det1 z=0.976 filename=Det1 format=ascii
 zntuple Det2 z=0.977 filename=Det2 format=ascii
 zntuple Det3 z=0.978 filename=Det3 format=ascii
@@ -62,7 +63,7 @@ zntuple Det46 z=1.021 filename=Det46 format=ascii
 zntuple Det47 z=1.022 filename=Det47 format=ascii
 zntuple Det48 z=1.023 filename=Det48 format=ascii
 zntuple Det49 z=1.024 filename=Det49 format=ascii
-zntuple DetSecond z=0.5 filename=$FNDS format=ascii
+zntuple Det55 z=1.030 filename=Det49 format=ascii
 
 param deltaChord=0.001
 param deltaIntersection=0.0001
