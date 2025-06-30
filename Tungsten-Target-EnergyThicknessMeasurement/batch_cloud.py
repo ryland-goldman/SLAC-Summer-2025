@@ -28,12 +28,12 @@ num_threads = int(subprocess.run(["nproc"], capture_output=True, text=True).stdo
 electron_mass = 0.511  # MeV/c^2
 
 # number of events per run
-event_count = 100000
+event_count = 1000000
 
 # energy min/max in MeV
 min_E = 131
 max_E = 150
-energy_range = np.linspace(min_E, max_E, 20)
+energy_range = np.array([5.0,10.0,15.0,20.0,40.0,70.0,100.0])
 
 # tungsten thickness in mm
 min_thickness = 0.5

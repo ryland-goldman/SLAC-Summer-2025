@@ -24,7 +24,8 @@ event_count = 1000000
 # energy min/max in MeV
 min_E = 1
 max_E = 150
-energy_range = np.linspace(min_E, max_E, 150)
+#energy_range = np.linspace(min_E, max_E, 150)
+energy_range = np.array([5.0,10.0,15.0,20.0,40.0,70.0,100.0])
 
 # tungsten thickness in mm
 min_thickness = 0.5
@@ -77,7 +78,7 @@ def worker(threadnumber):
 
 def run_sum(energy, thickness, threadnumber):
     global i
-    result = subprocess.run(["C:\\Program Files\\Muons, Inc\\G4beamline\\bin\\g4bl.exe","TungstenTarget.g4bl",f"KE={float(energy)}",f"thickness={thickness}",f"nEvents={event_count}", f"FNB=DetBackward{threadnumber}", f"FNF=DetForward{threadnumber}", f"FNS=DetSideways{threadnumber}"], capture_output=True, text=True)
+    result = subprocess.run(["/Applications/G4beamline-3.08.app/Contents/MacOS/g4bl","TungstenTarget.g4bl",f"KE={float(energy)}",f"thickness={thickness}",f"nEvents={event_count}", f"FNB=DetBackward{threadnumber}", f"FNF=DetForward{threadnumber}", f"FNS=DetSideways{threadnumber}"], capture_output=True, text=True)
     #print(result.stdout)
 
     if not result.returncode == 0:
