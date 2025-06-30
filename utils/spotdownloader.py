@@ -1,6 +1,6 @@
 download_files = [
-    {"name":"downloadedscript.py","url":"https://raw.githubusercontent.com/ryland-goldman/SLAC-Summer-2025/refs/heads/main/Tungsten-Target/batch_cloud.py"},
-    {"name":"TungstenTarget.g4bl","url":"https://raw.githubusercontent.com/ryland-goldman/SLAC-Summer-2025/refs/heads/main/Tungsten-Target/TungstenTarget.g4bl"}
+    {"name":"downloadedscript.py","url":"https://raw.githubusercontent.com/ryland-goldman/SLAC-Summer-2025/refs/heads/main/Tungsten-Target-EnergyThicknessMeasurement/batch_cloud.py"},
+    {"name":"TungstenTarget.g4bl","url":"https://raw.githubusercontent.com/ryland-goldman/SLAC-Summer-2025/refs/heads/main/Tungsten-Target-EnergyThicknessMeasurement/TungstenTarget.g4bl"}
 ]
 
 import requests
