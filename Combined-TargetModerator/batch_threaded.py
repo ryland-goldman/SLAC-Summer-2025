@@ -15,7 +15,18 @@ import random
 import warnings
 warnings.filterwarnings("ignore")
 
-num_threads = 12
+
+conf = "mac"
+
+if conf=="aws":
+    num_threads = 192
+    g4blloc = "/home/ubuntu/G4beamline-3.08/bin/g4bl"
+    out_dir = "/home/ubuntu"
+if conf=="mac":
+    num_threads = 14
+    g4blloc = "/Applications/G4beamline-3.08.app/Contents/MacOS/g4bl"
+    out_dir = "."
+
 
 # Constants
 electron_mass = 0.511  # MeV/c^2
@@ -56,7 +67,7 @@ def worker(threadnumber):
         tasks.task_done()
 
 def run_sum(threadnumber):
-    result = subprocess.run(["/Applications/G4beamline-3.08.app/Contents/MacOS/g4bl","Combined.g4bl",f"ThreadNumber={threadnumber}",f"RandSeed={random.randint(0,2**32-1)}"], capture_output=True, text=True)
+    result = subprocess.run([g4blloc,"Combined.g4bl",f"ThreadNumber={threadnumber}",f"RandSeed={random.randint(0,2**32-1)}"], capture_output=True, text=True)
 
     if not result.returncode == 0:
         print(f"Running iteration (Thread {threadnumber})... failed with code",result.returncode)
@@ -66,17 +77,17 @@ def run_sum(threadnumber):
         subprocess.run(f"cat Det*{threadnumber}.txt > Out{threadnumber}.txt", shell=True)
         subprocess.run(f"rm Det*{threadnumber}.txt",shell=True)
 
-        df = pd.read_csv(f"Out{threadnumber}.txt", skiprows=1, delim_whitespace=True, dtype={"z":float,"Pz":float,"t":float,"PDGid":str,"EventID":int}, usecols=["z","Pz","t","PDGid","EventID"], on_bad_lines="skip", names='x y z Px Py Pz t PDGid EventID TrackID ParentID Weight'.split(' '), comment="#")
+        df = pd.read_csv(f"Out{threadnumber}.txt", skiprows=1, delim_whitespace=True, dtype={"z":float,"Pz":float,"t":float,"PDGid":str,"EventID":int,"TrackID":int}, usecols=["z","Pz","t","PDGid","EventID","TrackID"], on_bad_lines="skip", names='x y z Px Py Pz t PDGid EventID TrackID ParentID Weight'.split(' '), comment="#")
         df = df[df["PDGid"] == "-11"]
         df = df.drop('PDGid', axis=1)
 
         df = df.convert_dtypes()
 
-        if f"Out{threadnumber}.dat" in os.listdir():
+        if f"Out{threadnumber}.dat" in os.listdir(out_dir):
             main_df = pd.read_parquet(f"Out{threadnumber}.dat")
             df = pd.concat([main_df,df],ignore_index=True)
 
-        df.to_parquet(f"Out{threadnumber}.dat",engine="pyarrow",compression="brotli",compression_level=10,index=False)
+        df.to_parquet(f"{out_dir}/Out{threadnumber}.dat",engine="pyarrow",compression="brotli",compression_level=10,index=False)
 
         os.remove(f"Out{threadnumber}.txt")
         

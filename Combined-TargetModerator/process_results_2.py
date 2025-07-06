@@ -35,6 +35,9 @@ bounce = 0
 
 for file in files:
     df = pd.read_parquet(file)
+    #df = pd.read_csv("all2.txt",skiprows=1, delim_whitespace=True, dtype={"z":float,"Pz":float,"t":float,"PDGid":str,"EventID":int,"TrackID":int}, usecols=["z","Pz","t","PDGid","EventID","TrackID"], on_bad_lines="skip", names='x y z Px Py Pz t PDGid EventID TrackID ParentID Weight'.split(' '), comment="#")
+
+    #df=df[df["PDGid"] == "-11"]
 
     for eventID, eventdf in df.groupby('EventID'):
         n_events += 1
@@ -42,7 +45,7 @@ for file in files:
             eventdf = eventdf.sort_values('t')
             last = eventdf[eventdf["Pz"] < threshold].iloc[0].z
             end = eventdf.iloc[-1]
-            if end.z<9.975 or end.z>10.025:
+            if end.z<9.975 or end.z>10.026:
                 bounce += 1
                 n_events -= 1
                 continue
@@ -52,11 +55,13 @@ for file in files:
             print(f"Exception {e} with event {eventID}:", eventdf)
             fail += 1
     
-end_z = np.array(end_z)
+#end_z = np.ceil(np.array(end_z))
 print(fail, bounce, n_events-fail)
 
 counts, bins = np.histogram(end_z,bins=np.linspace(0,50,50))
 plt.stairs(counts, bins)
+#values, counts = np.unique(end_z, return_counts=True)
+#plt.bar(values, counts)
 
 try:
     bin_centers = 0.5 * (bins[1:] + bins[:-1])
