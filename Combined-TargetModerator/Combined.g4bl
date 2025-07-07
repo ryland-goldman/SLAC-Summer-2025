@@ -4,7 +4,7 @@ randomseed Set $RandSeed
 # use 50 MeV beam
 param KE=100
 
-param nEvents=100000 thickness=0.05
+param nEvents=1000 thickness=0.05
 
 param M=0.511 KE=$KE
 param P=sqrt(($M+$KE)*($M+$KE)-$M*$M)
@@ -69,6 +69,26 @@ zntuple Det48 filename=Det48$ThreadNumber z=10.023 format=ascii
 zntuple Det49 filename=Det49$ThreadNumber z=10.024 format=ascii
 zntuple Det50 filename=Det50$ThreadNumber z=10.025 format=ascii
 zntuple Det55 z=10.030 filename=Det55$ThreadNumber format=ascii
+
+zntuple Det101 filename=Det101$ThreadNumber z=9.9751 format=ascii
+zntuple Det102 filename=Det102$ThreadNumber z=9.9752 format=ascii
+zntuple Det103 filename=Det103$ThreadNumber z=9.9753 format=ascii
+zntuple Det104 filename=Det104$ThreadNumber z=9.9754 format=ascii
+zntuple Det105 filename=Det105$ThreadNumber z=9.9755 format=ascii
+zntuple Det106 filename=Det106$ThreadNumber z=9.9756 format=ascii
+zntuple Det107 filename=Det107$ThreadNumber z=9.9757 format=ascii
+zntuple Det108 filename=Det108$ThreadNumber z=9.9758 format=ascii
+zntuple Det109 filename=Det109$ThreadNumber z=9.9759 format=ascii
+zntuple Det110 filename=Det110$ThreadNumber z=10.0241 format=ascii
+zntuple Det111 filename=Det110$ThreadNumber z=10.0242 format=ascii
+zntuple Det112 filename=Det110$ThreadNumber z=10.0243 format=ascii
+zntuple Det113 filename=Det110$ThreadNumber z=10.0244 format=ascii
+zntuple Det114 filename=Det110$ThreadNumber z=10.0245 format=ascii
+zntuple Det115 filename=Det110$ThreadNumber z=10.0246 format=ascii
+zntuple Det116 filename=Det110$ThreadNumber z=10.0247 format=ascii
+zntuple Det117 filename=Det110$ThreadNumber z=10.0248 format=ascii
+zntuple Det118 filename=Det110$ThreadNumber z=10.0249 format=ascii
+
 
 param deltaChord=0.001
 param deltaIntersection=0.0001

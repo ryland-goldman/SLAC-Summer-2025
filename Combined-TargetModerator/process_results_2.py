@@ -34,26 +34,33 @@ n_events = 0
 bounce = 0
 
 for file in files:
-    df = pd.read_parquet(file)
-    #df = pd.read_csv("all2.txt",skiprows=1, delim_whitespace=True, dtype={"z":float,"Pz":float,"t":float,"PDGid":str,"EventID":int,"TrackID":int}, usecols=["z","Pz","t","PDGid","EventID","TrackID"], on_bad_lines="skip", names='x y z Px Py Pz t PDGid EventID TrackID ParentID Weight'.split(' '), comment="#")
+    try: df = pd.read_parquet(file)
+    except Exception: continue
 
-    #df=df[df["PDGid"] == "-11"]
-
-    for eventID, eventdf in df.groupby('EventID'):
-        n_events += 1
-        try:
-            eventdf = eventdf.sort_values('t')
-            last = eventdf[eventdf["Pz"] < threshold].iloc[0].z
-            end = eventdf.iloc[-1]
-            if end.z<9.975 or end.z>10.026:
-                bounce += 1
-                n_events -= 1
-                continue
-            end_z.append((last-9.975)*1000.0)
-        except IndexError: fail += 1
-        except Exception as e:
-            print(f"Exception {e} with event {eventID}:", eventdf)
-            fail += 1
+    for runID, rundf in df.groupby('RunID'):
+        for eventID, eventdf in rundf.groupby('EventID'):
+            for trackID, trackdf in eventdf.groupby("TrackID"):
+                #print(trackdf)
+                n_events += 1
+                try:
+                    trackdf = trackdf.sort_values('t')
+                    last = trackdf[trackdf["Pz"] < threshold].iloc[0].z
+                    end = trackdf.iloc[-1]
+                    if trackdf.iloc[0].z > 9.97:
+                        n_events -= 1
+                        continue
+                    if end.z>10.026:
+                        n_events -= 1
+                        continue
+                    if not np.sum(trackdf["z"]==9.97) == 1:
+                        bounce += 1
+                        n_events -= 1
+                        continue
+                    end_z.append((last-9.975)*1000.0)
+                except IndexError: fail += 1
+                except Exception as e:
+                    print(f"Exception {e} with run {runID}, event {eventID}, track {trackID}:", trackdf)
+                    fail += 1
     
 #end_z = np.ceil(np.array(end_z))
 print(fail, bounce, n_events-fail)
@@ -74,7 +81,7 @@ except Exception as e:
     print(e)
 
 plt.xlabel("Penetration Depth (µm)")
-plt.ylabel("Count /$10^4$")
+plt.ylabel("Count")
 
 
 plt.show()

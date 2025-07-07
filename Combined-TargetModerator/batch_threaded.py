@@ -16,7 +16,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-conf = "mac"
+conf = "aws"
 
 if conf=="aws":
     num_threads = 192
@@ -27,12 +27,6 @@ if conf=="mac":
     g4blloc = "/Applications/G4beamline-3.08.app/Contents/MacOS/g4bl"
     out_dir = "."
 
-
-# Constants
-electron_mass = 0.511  # MeV/c^2
-
-# number of events per run
-event_count = 100000
 
 
 
@@ -82,9 +76,11 @@ def run_sum(threadnumber):
         df = df.drop('PDGid', axis=1)
 
         df = df.convert_dtypes()
+        df["RunID"] = 0
 
         if f"Out{threadnumber}.dat" in os.listdir(out_dir):
-            main_df = pd.read_parquet(f"Out{threadnumber}.dat")
+            main_df = pd.read_parquet(f"{out_dir}/Out{threadnumber}.dat")
+            df["RunID"] = main_df['RunID'].max() + 1
             df = pd.concat([main_df,df],ignore_index=True)
 
         df.to_parquet(f"{out_dir}/Out{threadnumber}.dat",engine="pyarrow",compression="brotli",compression_level=10,index=False)
