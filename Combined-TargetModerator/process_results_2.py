@@ -22,13 +22,19 @@ pd.set_option('display.width', 150)
 import warnings
 warnings.filterwarnings("ignore")
 
-files = [a for a in os.listdir() if a[0:3]=="Out" and a[-3:]=="pkl"]
+files = [a for a in os.listdir() if a[0:3]=="Out" and a[-3:]=="dat"]
+
+threshold = 0.001 # 1 keV/c = thermalization
 
 dims_50um = [9.975, 10.025, 50]
 dims_200um = [9.9, 10.1, 200]
 dims = dims_200um
 
-threshold = 0.001 # 1 keV/c = thermalization
+def momentum_to_ke(p_mev_c):
+    m_e = 0.510998950 # MeV
+    total_energy = (p_mev_c**2 + m_e**2)**0.5
+    ke_keV = (total_energy - m_e)*1e3
+    return ke_keV
 
 end_z = []
 initial_p = []
@@ -37,13 +43,38 @@ all_initial_p = []
 all_initial_angle = []
 
 def run_file(file):
-    with open(file, 'rb') as f: final_out_data = pkl.load(f)
-    loc_end_z = final_out_data["end_z"]
-    loc_initial_p = final_out_data["initial_p"]
-    loc_initial_angle = final_out_data["initial_angle"]
+    loc_end_z = []
+    loc_initial_p = []
+    loc_initial_angle = []
     loc_all_initial_p = []
     loc_all_initial_angle = []
-    
+    try: df=pd.read_parquet(file)
+    except Exception:
+        print(f"Error loading {file}")
+        return
+
+    for runID, rundf in df.groupby('RunID'):
+        for eventID, eventdf in rundf.groupby('EventID'):
+            for trackID, trackdf in eventdf.groupby("TrackID"):
+                try:
+                    trackdf = trackdf.sort_values('t')
+                    end = trackdf.iloc[-1]
+                    if trackdf.iloc[0].z > dims[0] - 0.001:
+                        continue
+                    if not np.sum(trackdf["z"]==dims[0]-0.005) == 1:
+                        continue
+                    if end.z>10.1:
+                        continue
+                    if not np.sum(trackdf["z"]==dims[0]+0.050) == 0:
+                        continue
+                    total_p = math.sqrt(trackdf.iloc[0].Px**2 + trackdf.iloc[0].Py**2 + trackdf.iloc[0].Pz**2)
+                    angle = math.acos(trackdf.iloc[0].Pz / total_p)
+                    loc_initial_angle.append( angle*180.0/math.pi )
+                    loc_initial_p.append( total_p )
+                    loc_end_z.append((end.z-dims[0])*1000.0)
+                except IndexError as e:
+                    pass
+
     with output_lock:
         global end_z, initial_angle, initial_p, all_initial_angle, all_initial_p
         end_z = end_z + loc_end_z

@@ -1,0 +1,131 @@
+physics FTFP_BERT_EMZ
+randomseed Set $RandSeed
+
+param KE=100
+
+param nEvents=1000 thickness=0.200
+
+param M=0.511 KE=$KE
+param P=sqrt(($M+$KE)*($M+$KE)-$M*$M)
+beam gaussian meanMomentum=$P nEvents=$nEvents particle=e-
+
+box Target width=50 height=50 length=7 material=W color=1,0,0
+place Target z=5
+
+box Moderator width=50 height=50 length=$thickness material=W color=1,0,0
+place Moderator z=10
+
+# Input/output detectors 
+zntuple DetNeg5 z=9.895 filename=DetNeg5$ThreadNumber format=ascii
+zntuple Det55 z=10.105 filename=Det55$ThreadNumber format=ascii
+
+# Middle detectors
+zntuple Det0 filename=Det0$ThreadNumber z=9.9 format=ascii
+zntuple Det1 filename=Det1$ThreadNumber z=9.902 format=ascii
+zntuple Det2 filename=Det2$ThreadNumber z=9.904 format=ascii
+zntuple Det3 filename=Det3$ThreadNumber z=9.906 format=ascii
+zntuple Det4 filename=Det4$ThreadNumber z=9.908 format=ascii
+zntuple Det5 filename=Det5$ThreadNumber z=9.91 format=ascii
+zntuple Det6 filename=Det6$ThreadNumber z=9.912 format=ascii
+zntuple Det7 filename=Det7$ThreadNumber z=9.914 format=ascii
+zntuple Det8 filename=Det8$ThreadNumber z=9.916 format=ascii
+zntuple Det9 filename=Det9$ThreadNumber z=9.918 format=ascii
+zntuple Det10 filename=Det10$ThreadNumber z=9.92 format=ascii
+zntuple Det11 filename=Det11$ThreadNumber z=9.922 format=ascii
+zntuple Det12 filename=Det12$ThreadNumber z=9.924 format=ascii
+zntuple Det13 filename=Det13$ThreadNumber z=9.926 format=ascii
+zntuple Det14 filename=Det14$ThreadNumber z=9.928 format=ascii
+zntuple Det15 filename=Det15$ThreadNumber z=9.93 format=ascii
+zntuple Det16 filename=Det16$ThreadNumber z=9.932 format=ascii
+zntuple Det17 filename=Det17$ThreadNumber z=9.934 format=ascii
+zntuple Det18 filename=Det18$ThreadNumber z=9.936 format=ascii
+zntuple Det19 filename=Det19$ThreadNumber z=9.938 format=ascii
+zntuple Det20 filename=Det20$ThreadNumber z=9.94 format=ascii
+zntuple Det21 filename=Det21$ThreadNumber z=9.942 format=ascii
+zntuple Det22 filename=Det22$ThreadNumber z=9.944 format=ascii
+zntuple Det23 filename=Det23$ThreadNumber z=9.946 format=ascii
+zntuple Det24 filename=Det24$ThreadNumber z=9.948 format=ascii
+zntuple Det25 filename=Det25$ThreadNumber z=9.95 format=ascii
+zntuple Det26 filename=Det26$ThreadNumber z=9.952 format=ascii
+zntuple Det27 filename=Det27$ThreadNumber z=9.954 format=ascii
+zntuple Det28 filename=Det28$ThreadNumber z=9.956 format=ascii
+zntuple Det29 filename=Det29$ThreadNumber z=9.958 format=ascii
+zntuple Det30 filename=Det30$ThreadNumber z=9.96 format=ascii
+zntuple Det31 filename=Det31$ThreadNumber z=9.962 format=ascii
+zntuple Det32 filename=Det32$ThreadNumber z=9.964 format=ascii
+zntuple Det33 filename=Det33$ThreadNumber z=9.966 format=ascii
+zntuple Det34 filename=Det34$ThreadNumber z=9.968 format=ascii
+zntuple Det35 filename=Det35$ThreadNumber z=9.97 format=ascii
+zntuple Det36 filename=Det36$ThreadNumber z=9.972 format=ascii
+zntuple Det37 filename=Det37$ThreadNumber z=9.974 format=ascii
+zntuple Det38 filename=Det38$ThreadNumber z=9.976 format=ascii
+zntuple Det39 filename=Det39$ThreadNumber z=9.978 format=ascii
+zntuple Det40 filename=Det40$ThreadNumber z=9.98 format=ascii
+zntuple Det41 filename=Det41$ThreadNumber z=9.982 format=ascii
+zntuple Det42 filename=Det42$ThreadNumber z=9.984 format=ascii
+zntuple Det43 filename=Det43$ThreadNumber z=9.986 format=ascii
+zntuple Det44 filename=Det44$ThreadNumber z=9.988 format=ascii
+zntuple Det45 filename=Det45$ThreadNumber z=9.99 format=ascii
+zntuple Det46 filename=Det46$ThreadNumber z=9.992 format=ascii
+zntuple Det47 filename=Det47$ThreadNumber z=9.994 format=ascii
+zntuple Det48 filename=Det48$ThreadNumber z=9.996 format=ascii
+zntuple Det49 filename=Det49$ThreadNumber z=9.998 format=ascii
+zntuple Det50 filename=Det50$ThreadNumber z=10.0 format=ascii
+zntuple Det51 filename=Det51$ThreadNumber z=10.002 format=ascii
+zntuple Det52 filename=Det52$ThreadNumber z=10.004 format=ascii
+zntuple Det53 filename=Det53$ThreadNumber z=10.006 format=ascii
+zntuple Det54 filename=Det54$ThreadNumber z=10.008 format=ascii
+zntuple Det55 filename=Det55$ThreadNumber z=10.01 format=ascii
+zntuple Det56 filename=Det56$ThreadNumber z=10.012 format=ascii
+zntuple Det57 filename=Det57$ThreadNumber z=10.014 format=ascii
+zntuple Det58 filename=Det58$ThreadNumber z=10.016 format=ascii
+zntuple Det59 filename=Det59$ThreadNumber z=10.018 format=ascii
+zntuple Det60 filename=Det60$ThreadNumber z=10.02 format=ascii
+zntuple Det61 filename=Det61$ThreadNumber z=10.022 format=ascii
+zntuple Det62 filename=Det62$ThreadNumber z=10.024 format=ascii
+zntuple Det63 filename=Det63$ThreadNumber z=10.026 format=ascii
+zntuple Det64 filename=Det64$ThreadNumber z=10.028 format=ascii
+zntuple Det65 filename=Det65$ThreadNumber z=10.03 format=ascii
+zntuple Det66 filename=Det66$ThreadNumber z=10.032 format=ascii
+zntuple Det67 filename=Det67$ThreadNumber z=10.034 format=ascii
+zntuple Det68 filename=Det68$ThreadNumber z=10.036 format=ascii
+zntuple Det69 filename=Det69$ThreadNumber z=10.038 format=ascii
+zntuple Det70 filename=Det70$ThreadNumber z=10.04 format=ascii
+zntuple Det71 filename=Det71$ThreadNumber z=10.042 format=ascii
+zntuple Det72 filename=Det72$ThreadNumber z=10.044 format=ascii
+zntuple Det73 filename=Det73$ThreadNumber z=10.046 format=ascii
+zntuple Det74 filename=Det74$ThreadNumber z=10.048 format=ascii
+zntuple Det75 filename=Det75$ThreadNumber z=10.05 format=ascii
+zntuple Det76 filename=Det76$ThreadNumber z=10.052 format=ascii
+zntuple Det77 filename=Det77$ThreadNumber z=10.054 format=ascii
+zntuple Det78 filename=Det78$ThreadNumber z=10.056 format=ascii
+zntuple Det79 filename=Det79$ThreadNumber z=10.058 format=ascii
+zntuple Det80 filename=Det80$ThreadNumber z=10.06 format=ascii
+zntuple Det81 filename=Det81$ThreadNumber z=10.062 format=ascii
+zntuple Det82 filename=Det82$ThreadNumber z=10.064 format=ascii
+zntuple Det83 filename=Det83$ThreadNumber z=10.066 format=ascii
+zntuple Det84 filename=Det84$ThreadNumber z=10.068 format=ascii
+zntuple Det85 filename=Det85$ThreadNumber z=10.07 format=ascii
+zntuple Det86 filename=Det86$ThreadNumber z=10.072 format=ascii
+zntuple Det87 filename=Det87$ThreadNumber z=10.074 format=ascii
+zntuple Det88 filename=Det88$ThreadNumber z=10.076 format=ascii
+zntuple Det89 filename=Det89$ThreadNumber z=10.078 format=ascii
+zntuple Det90 filename=Det90$ThreadNumber z=10.08 format=ascii
+zntuple Det91 filename=Det91$ThreadNumber z=10.082 format=ascii
+zntuple Det92 filename=Det92$ThreadNumber z=10.084 format=ascii
+zntuple Det93 filename=Det93$ThreadNumber z=10.086 format=ascii
+zntuple Det94 filename=Det94$ThreadNumber z=10.088 format=ascii
+zntuple Det95 filename=Det95$ThreadNumber z=10.09 format=ascii
+zntuple Det96 filename=Det96$ThreadNumber z=10.092 format=ascii
+zntuple Det97 filename=Det97$ThreadNumber z=10.094 format=ascii
+zntuple Det98 filename=Det98$ThreadNumber z=10.096 format=ascii
+zntuple Det99 filename=Det99$ThreadNumber z=10.098 format=ascii
+zntuple Det100 filename=Det100$ThreadNumber z=10.1 format=ascii
+
+# Parameters
+param deltaChord=0.001
+param deltaIntersection=0.0001
+param deltaOneStep=0.0001
+param minStep=0.00005
+#param maxStep=0.005
+param minRangeCut=0.0001

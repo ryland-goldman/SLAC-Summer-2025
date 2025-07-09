@@ -11,6 +11,7 @@ import threading
 import queue
 import math
 import random
+import pickle as pkl
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -27,6 +28,10 @@ if conf=="mac":
     g4blloc = "/Applications/G4beamline-3.08.app/Contents/MacOS/g4bl"
     out_dir = "."
 
+
+dims_50um = [9.975, 10.025, 50, "Combined.g4bl"]
+dims_200um = [9.9, 10.1, 200, "Combined200.g4bl"]
+dims = dims_200um
 
 
 
@@ -61,7 +66,7 @@ def worker(threadnumber):
         tasks.task_done()
 
 def run_sum(threadnumber):
-    result = subprocess.run([g4blloc,"Combined.g4bl",f"ThreadNumber={threadnumber}",f"RandSeed={random.randint(0,2**32-1)}"], capture_output=True, text=True)
+    result = subprocess.run([g4blloc,dims[3],f"ThreadNumber={threadnumber}",f"RandSeed={random.randint(0,2**32-1)}"], capture_output=True, text=True)
 
     if not result.returncode == 0:
         print(f"Running iteration (Thread {threadnumber})... failed with code",result.returncode)
@@ -75,6 +80,7 @@ def run_sum(threadnumber):
         df = df[df["PDGid"] == "-11"]
         df = df.drop('PDGid', axis=1)
 
+        tmp_df = df
         df["RunID"] = 0
 
         if f"Out{threadnumber}.dat" in os.listdir(out_dir):
@@ -87,6 +93,34 @@ def run_sum(threadnumber):
         df.to_parquet(f"{out_dir}/Out{threadnumber}.dat",engine="pyarrow",compression="brotli",compression_level=10,index=False)
 
         os.remove(f"Out{threadnumber}.txt")
+
+        if not f"Out{threadnumber}.pkl" in os.listdir():
+            final_out_data = {"initial_angle":[],"initial_p":[],"end_z":[]}
+        else:
+            with open(f"Out{threadnumber}.pkl", 'rb') as f: final_out_data = pkl.load(f)
+
+        for eventID, eventdf in tmp_df.groupby('EventID'):
+            for trackID, trackdf in eventdf.groupby("TrackID"):
+                try:
+                    trackdf = trackdf.sort_values('t')
+                    end = trackdf.iloc[-1]
+                    if trackdf.iloc[0].z > dims[0]-0.001:
+                        continue
+                    if not np.sum(trackdf["z"]==dims[0]-0.005) == 1:
+                        continue
+                    if end.z>10.101:
+                        continue
+                    total_p = math.sqrt(trackdf.iloc[0].Px**2 + trackdf.iloc[0].Py**2 + trackdf.iloc[0].Pz**2)
+                    angle = math.acos(trackdf.iloc[0].Pz / total_p)
+                    final_out_data["initial_angle"].append( angle*180.0/math.pi )
+                    final_out_data["initial_p"].append( total_p )
+                    final_out_data["end_z"].append((end.z-dims[0])*1000.0)
+                except IndexError as e:
+                    pass
+        
+        with open(f"Out{threadnumber}.pkl", 'wb') as f:
+            pkl.dump(final_out_data, f, protocol=pkl.HIGHEST_PROTOCOL)
+
         
     except Exception as e:
         print(f"Running iteration {i} (Thread {threadnumber})... failed with exception",e)
