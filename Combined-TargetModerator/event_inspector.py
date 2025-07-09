@@ -19,7 +19,7 @@ warnings.filterwarnings("ignore")
 
 dims_50um = [9.975, 10.025, 50]
 dims_200um = [9.9, 10.1, 200]
-dims = dims_200um
+dims = dims_50um
 
 electron_mass = 0.511  # MeV/c^2
 event_count = 1000000
@@ -124,7 +124,7 @@ for file in files:
                 try:
                     trackdf = trackdf.sort_values('t')
                     #last = trackdf[trackdf["Pz"] < 0.001].iloc[0].z
-                    end = trackdf.iloc[-1]
+                    end = trackdf.iloc[-2]
                     last = end.z
                     '''if end.z>10.101:
                         print(f"Run {runID}, event {eventID}, track {trackID}: ",end='')
@@ -150,10 +150,10 @@ for file in files:
                         continue
                     if not np.sum(trackdf["z"]==dims[0] - 0.005) == 1:
                         continue
-                    if end.z>10.1:
+                    if end.z>dims[1]:
                         continue
-                    if not np.sum(trackdf["z"]==dims[0] + 0.050) == 0:
-                        continue
+                    #if not np.sum(trackdf["z"]==dims[0] + 0.050) == 0:
+                    #    continue
                     if momentum_to_ke(math.sqrt(float(end.Pz)**2 + float(end.Px)**2 + float(end.Py)**2)) < 500: continue
                 except IndexError:
                     continue

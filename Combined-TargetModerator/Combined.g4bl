@@ -1,4 +1,4 @@
-physics FTFP_BERT_EMZ
+physics FTFP_BERT_PEN minRangeCut=0.001
 randomseed Set $RandSeed
 
 param KE=100
@@ -68,10 +68,13 @@ zntuple Det116 filename=Det116$ThreadNumber z=10.0247 format=ascii
 zntuple Det117 filename=Det117$ThreadNumber z=10.0248 format=ascii
 zntuple Det118 filename=Det118$ThreadNumber z=10.0249 format=ascii
 
+# Kill detector
+beamlossntuple DetKill filename=DetKill$ThreadNumber format=ascii
+
 # Parameters
 param deltaChord=0.001
 param deltaIntersection=0.0001
 param deltaOneStep=0.0001
 param minStep=0.00005
 #param maxStep=0.005
-param minRangeCut=0.0001
+param kineticEnergyCut=0

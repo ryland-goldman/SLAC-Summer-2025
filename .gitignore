@@ -2,4 +2,5 @@ Det*.txt
 g4bl.out
 im*.png
 .DS_Store
-*.dat
+Out*.dat
+Out*.pkl

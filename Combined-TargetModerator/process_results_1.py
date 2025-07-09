@@ -26,7 +26,7 @@ files = [a for a in os.listdir() if a[0:3]=="Out" and a[-3:]=="pkl"]
 
 dims_50um = [9.975, 10.025, 50]
 dims_200um = [9.9, 10.1, 200]
-dims = dims_200um
+dims = dims_50um
 
 threshold = 0.001 # 1 keV/c = thermalization
 

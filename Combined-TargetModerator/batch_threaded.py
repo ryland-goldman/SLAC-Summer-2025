@@ -31,7 +31,7 @@ if conf=="mac":
 
 dims_50um = [9.975, 10.025, 50, "Combined.g4bl"]
 dims_200um = [9.9, 10.1, 200, "Combined200.g4bl"]
-dims = dims_200um
+dims = dims_50um
 
 
 
