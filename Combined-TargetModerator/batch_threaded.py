@@ -16,7 +16,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-conf = "aws"
+conf = "mac"
 
 if conf=="aws":
     num_threads = 192
@@ -71,17 +71,18 @@ def run_sum(threadnumber):
         subprocess.run(f"cat Det*{threadnumber}.txt > Out{threadnumber}.txt", shell=True)
         subprocess.run(f"rm Det*{threadnumber}.txt",shell=True)
 
-        df = pd.read_csv(f"Out{threadnumber}.txt", skiprows=1, delim_whitespace=True, dtype={"z":float,"Pz":float,"t":float,"PDGid":str,"EventID":int,"TrackID":int}, usecols=["z","Pz","t","PDGid","EventID","TrackID"], on_bad_lines="skip", names='x y z Px Py Pz t PDGid EventID TrackID ParentID Weight'.split(' '), comment="#")
+        df = pd.read_csv(f"Out{threadnumber}.txt", skiprows=1, delim_whitespace=True, dtype={"x":np.float32,"y":np.float32,"z":np.float32,"Px":np.float32,"Py":np.float32,"Pz":np.float32,"t":np.float32,"PDGid":str,"EventID":np.uint32,"TrackID":np.uint16}, usecols=["x","y","z","Px","Py","Pz","t","PDGid","EventID","TrackID"], on_bad_lines="skip", names='x y z Px Py Pz t PDGid EventID TrackID ParentID Weight'.split(' '), comment="#")
         df = df[df["PDGid"] == "-11"]
         df = df.drop('PDGid', axis=1)
 
-        df = df.convert_dtypes()
         df["RunID"] = 0
 
         if f"Out{threadnumber}.dat" in os.listdir(out_dir):
             main_df = pd.read_parquet(f"{out_dir}/Out{threadnumber}.dat")
             df["RunID"] = main_df['RunID'].max() + 1
             df = pd.concat([main_df,df],ignore_index=True)
+
+        df["RunID"] = df["RunID"].astype('Int16')
 
         df.to_parquet(f"{out_dir}/Out{threadnumber}.dat",engine="pyarrow",compression="brotli",compression_level=10,index=False)
 
