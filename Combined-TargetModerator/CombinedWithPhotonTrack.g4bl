@@ -1,0 +1,31 @@
+physics FTFP_BERT_PEN minRangeCut=0.025
+randomseed Set $RandSeed
+
+param KE=100
+
+param nEvents=10000 thickness=0.05
+
+param M=0.511 KE=$KE
+param P=sqrt(($M+$KE)*($M+$KE)-$M*$M)
+beam gaussian meanMomentum=$P nEvents=$nEvents particle=e-
+
+box Target width=50 height=50 length=7 material=W color=1,0,0
+place Target z=5
+
+box Moderator width=50 height=50 length=$thickness material=W color=1,0,0
+place Moderator z=10
+
+# Input detector
+zntuple DetNeg5 z=9.970 filename=DetNeg5$ThreadNumber format=ascii
+
+# Kill detector
+beamlossntuple DetKill filename=DetKill$ThreadNumber format=ascii
+newparticlentuple DetKill2 filename=NewParticles$ThreadNumber format=ascii
+
+# Parameters
+param deltaChord=0.001
+param deltaIntersection=0.0001
+param deltaOneStep=0.0001
+param minStep=0.00005
+#param maxStep=0.005
+param kineticEnergyCut=0

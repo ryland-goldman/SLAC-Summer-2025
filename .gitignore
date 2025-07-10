@@ -4,3 +4,4 @@ im*.png
 .DS_Store
 Out*.dat
 Out*.pkl
+NewParticles*.txt
