@@ -24,7 +24,7 @@ if conf=="aws":
     g4blloc = "/home/ubuntu/G4beamline-3.08/bin/g4bl"
     out_dir = "/home/ubuntu"
 if conf=="mac":
-    num_threads = 14
+    num_threads = 1
     g4blloc = "/Applications/G4beamline-3.08.app/Contents/MacOS/g4bl"
     out_dir = "."
 
@@ -74,7 +74,7 @@ def run_sum(threadnumber):
 
     try:
         subprocess.run(f"cat Det*{threadnumber}.txt > Out{threadnumber}.txt", shell=True)
-        subprocess.run(f"rm Det*{threadnumber}.txt",shell=True)
+        #subprocess.run(f"rm Det*{threadnumber}.txt",shell=True)
 
         df = pd.read_csv(f"Out{threadnumber}.txt", skiprows=1, delim_whitespace=True, dtype={"x":np.float32,"y":np.float32,"z":np.float32,"Px":np.float32,"Py":np.float32,"Pz":np.float32,"t":np.float32,"PDGid":str,"EventID":np.uint32,"TrackID":np.uint16}, usecols=["x","y","z","Px","Py","Pz","t","PDGid","EventID","TrackID"], on_bad_lines="skip", names='x y z Px Py Pz t PDGid EventID TrackID ParentID Weight'.split(' '), comment="#")
         df = df[df["PDGid"] == "-11"]

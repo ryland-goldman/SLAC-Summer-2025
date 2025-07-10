@@ -3,7 +3,7 @@ randomseed Set $RandSeed
 
 param KE=100
 
-param nEvents=10000 thickness=0.05
+param nEvents=10000 thickness=0.200
 
 param M=0.511 KE=$KE
 param P=sqrt(($M+$KE)*($M+$KE)-$M*$M)
@@ -16,7 +16,7 @@ box Moderator width=50 height=50 length=$thickness material=W color=1,0,0
 place Moderator z=10
 
 # Input detector
-zntuple DetNeg5 z=9.970 filename=DetNeg5$ThreadNumber format=ascii
+zntuple DetNeg5 z=9.895 filename=DetNeg5$ThreadNumber format=ascii
 
 # Kill detector
 beamlossntuple DetKill filename=DetKill$ThreadNumber format=ascii

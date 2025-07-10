@@ -22,14 +22,16 @@ pd.set_option('display.width', 150)
 import warnings
 warnings.filterwarnings("ignore")
 
-files = [a for a in os.listdir() if a[0:3]=="Out" and a[-3:]=="pkl"]
+files = [a for a in os.listdir() if a[0:3]=="Out" and a[-3:]=="dat"]
 
 dims_50um = [9.975, 10.025, 50]
 dims_200um = [9.9, 10.1, 200]
-dims = dims_50um
+dims = dims_200um
 
 threshold = 0.001 # 1 keV/c = thermalization
 
+end_x = []
+end_y = []
 end_z = []
 initial_p = []
 initial_angle = []
@@ -37,15 +39,24 @@ all_initial_p = []
 all_initial_angle = []
 
 def run_file(file):
-    with open(file, 'rb') as f: final_out_data = pkl.load(f)
-    loc_end_z = final_out_data["end_z"]
-    loc_initial_p = final_out_data["initial_p"]
-    loc_initial_angle = final_out_data["initial_angle"]
-    loc_all_initial_p = []
-    loc_all_initial_angle = []
+    try: df = pd.read_parquet(file)
+    except Exception:
+        print(f"Err {file}")
+        return
+    loc_all_initial_angle = list(df["initialAngle"])
+    loc_all_initial_p = list(df["initialP"])
+    df = df[df["endz"] > dims[0]]
+    df = df[df["endz"] < dims[1]]
+    loc_end_x = list(df["endx"])
+    loc_end_y = list(df["endy"])
+    loc_end_z = list((df["endz"] - dims[0]) * 1000.0)
+    loc_initial_p = list(df["initialP"])
+    loc_initial_angle = list(df["initialAngle"])
     
     with output_lock:
-        global end_z, initial_angle, initial_p, all_initial_angle, all_initial_p
+        global end_x, end_y, end_z, initial_angle, initial_p, all_initial_angle, all_initial_p
+        end_x = end_x + loc_end_x
+        end_y = end_y + loc_end_y
         end_z = end_z + loc_end_z
         initial_p = initial_p + loc_initial_p
         initial_angle = initial_angle + loc_initial_angle
@@ -63,27 +74,46 @@ def worker(threadnumber):
 
 output_lock = threading.Lock()
 threads = []
-for i in range(12):
-    thread = threading.Thread(target=worker, args=(i,))
-    thread.start()
-    threads.append(thread)
+#for i in range(12):
+#    thread = threading.Thread(target=worker, args=(i,))
+#    thread.start()
+#    threads.append(thread)
+for i in files: run_file(i)
 
-tasks.join()
+#tasks.join()
 
-print(end_z)
-end_z = np.where(np.array(end_z) < 1.0, 1.0, np.round(end_z))
+#end_z = np.where(np.array(end_z) < 1.0, 1.0, np.round(end_z))
+end_z = np.array(end_z)
 
-print(initial_angle)
-print(initial_p)
+dist_to_border = np.abs(end_z - np.round(end_z / 25.0) * 25.0)
+out_prob = np.exp(-dist_to_border / 0.055)
+n_diff = 0
+diff_x = []
+diff_y = []
+diff_z = []
+layer_distance = 10
+for i in range(len(end_z)):
+    if out_prob[i] > np.random.uniform():
+        print(f"Particle diffused: ({end_x[i]}, {end_y[i]}, {end_z[i]})")
+        n_layers = end_z[i] // 25
+        diff_x.append(end_x[i])
+        diff_y.append(end_y[i])
+        diff_z.append(end_z[i]*0.001 + layer_distance * n_layers)
+        n_diff += 1
+print(np.sum(out_prob),n_diff)
+print(len(end_z))
+print(len(all_initial_angle))
 
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+ax.scatter(diff_x,diff_y,diff_z)
+plt.show()
 
-
-counts, bins = np.histogram(end_z,bins=np.linspace(0,dims[2],dims[2]))
+counts, bins = np.histogram(end_z,np.linspace(0,dims[2],dims[2]//5))
 plt.stairs(counts, bins)
 plt.title("Stopping Distribution")
 
 plt.show()
-plt.clf()
 
 fig, axs = plt.subplots(2, 1, figsize=(6, 10))
 counts1, bins1 = np.histogram(initial_p,bins=np.linspace(0,10,50))
@@ -101,7 +131,6 @@ axs[1].set_ylabel("Fraction Stopped")
 
 plt.tight_layout()
 plt.show()
-plt.clf()
 
 fig, axs = plt.subplots(2, 1, figsize=(6, 10))
 

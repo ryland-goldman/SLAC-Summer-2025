@@ -86,8 +86,8 @@ def plot_fig_mixed(x, y, z, t, pz):
     sc2d = axes2d[n_plots].scatter(z, pz, c=t)
     axes2d[n_plots].set_xlabel("z (µm)")
     axes2d[n_plots].set_ylabel("E (keV)")
-    axes2d[n_plots].axvline(x=(last - dims[0]) * 1000.0)
-    axes2d[n_plots].axvline(x=50.0, color='red')
+    #axes2d[n_plots].axvline(x=(last - dims[0]) * 1000.0)
+    #axes2d[n_plots].axvline(x=50.0, color='red')
     cb2d = fig.colorbar(sc2d, ax=axes2d[n_plots])
     cb2d.set_label("Time (ps)")
 
@@ -154,7 +154,7 @@ for file in files:
                         continue
                     #if not np.sum(trackdf["z"]==dims[0] + 0.050) == 0:
                     #    continue
-                    if momentum_to_ke(math.sqrt(float(end.Pz)**2 + float(end.Px)**2 + float(end.Py)**2)) < 500: continue
+                    #if momentum_to_ke(math.sqrt(float(end.Pz)**2 + float(end.Px)**2 + float(end.Py)**2)) < 500: continue
                 except IndexError:
                     continue
 
@@ -168,3 +168,6 @@ for file in files:
                 #plot_fig(z,pz,t)
                 #plot_fig_3d(x,y,z,t)
                 plot_fig_mixed(x,y,z,t,pz)
+
+if not n_plots == 0:
+    plt.show()

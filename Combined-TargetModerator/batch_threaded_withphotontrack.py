@@ -12,26 +12,28 @@ import queue
 import math
 import random
 import pickle as pkl
+import time
 
 import warnings
 warnings.filterwarnings("ignore")
 
+while "stop.txt" in os.listdir(): time.sleep(1)
 
-conf = "mac"
+conf = "aws"
 
 if conf=="aws":
     num_threads = 192
     g4blloc = "/home/ubuntu/G4beamline-3.08/bin/g4bl"
     out_dir = "/home/ubuntu"
 if conf=="mac":
-    num_threads = 1
+    num_threads = 14
     g4blloc = "/Applications/G4beamline-3.08.app/Contents/MacOS/g4bl"
     out_dir = "."
 
 
 dims_50um = [9.975, 10.025, 50, "CombinedWithPhotonTrack.g4bl"]
-#dims_200um = [9.9, 10.1, 200, "Combined200.g4bl"]
-dims = dims_50um
+dims_200um = [9.9, 10.1, 200, "CombinedWithPhotonTrack200.g4bl"]
+dims = dims_200um
 
 def momentum_to_ke(p_mev_c):
     m_e = 0.510998950 # MeV
@@ -89,7 +91,7 @@ def run_sum(threadnumber):
         df_stop = df_stop.drop('PDGid', axis=1)
         df_newparticles = df_newparticles.drop('PDGid', axis=1)
 
-        df = pd.DataFrame(columns=["initialx","initialy","initialz","initialPx","initialPy","initialPz","initialP","initialE","initialAngle","endx","endy","endz","endPx","endPy","endPz","endt","endP","endE","EventID","TrackID","RunID"])
+        df = pd.DataFrame(columns=["initialx","initialy","initialz","initialPx","initialPy","initialPz","initialP","initialE","initialAngle","endx","endy","endz","endt","EventID","TrackID","RunID"])
 
         for eventID, eventdf in df_stop.groupby('EventID'):
             current_event_initial = df_initial[df_initial["EventID"] == eventID]
@@ -107,24 +109,15 @@ def run_sum(threadnumber):
                     df_copy["z"] -= end.z
                     df_copy["t"] -= end.t
                     df_copy["r2"] = (df_copy["x"]**2) + (df_copy["y"])**2 + (df_copy["z"])**2 + (df_copy["t"])**2
-                    df_copy = df_copy.sort_values("r2")
-                    photons = df_copy.iloc[0] + df_copy.iloc[1]
+                    min_r2 = np.min(df_copy["r2"])
 
-                    end.Px = photons.Px
-                    end.Py = photons.Py
-                    end.Pz = photons.Pz
-                    end_p  = math.sqrt(df_copy.iloc[0].Px**2 + df_copy.iloc[0].Py**2 + df_copy.iloc[0].Pz**2)
-                    end_p += math.sqrt(df_copy.iloc[1].Px**2 + df_copy.iloc[1].Py**2 + df_copy.iloc[1].Pz**2)
-                    end_e = 1000.0*end_p - 2*510.998950
-
-                    if end.z > 9.97 and end.z < 10.13:
-                        print(end_e,end.z)
+                    if np.isclose(min_r2, 0.0, atol=1e-3): continue
 
                     initial_p = math.sqrt(initial.iloc[0].Px**2 + initial.iloc[0].Py**2 + initial.iloc[0].Pz**2)
                     initial_e = momentum_to_ke(initial_p)
                     initial_angle = math.acos(initial.iloc[0].Pz / initial_p) * 180.0/math.pi
 
-                    df.loc[len(df)] = [ initial.iloc[0].x, initial.iloc[0].y, initial.iloc[0].z, initial.iloc[0].Px, initial.iloc[0].Py, initial.iloc[0].Pz, initial_p, initial_e, initial_angle, end.x, end.y, end.z, end.Px, end.Py, end.Pz, end.t, end_p, end_e, eventID, trackID, 0]
+                    df.loc[len(df)] = [ initial.iloc[0].x, initial.iloc[0].y, initial.iloc[0].z, initial.iloc[0].Px, initial.iloc[0].Py, initial.iloc[0].Pz, initial_p, initial_e, initial_angle, end.x, end.y, end.z, end.t, eventID, trackID, 0]
                     
                 except IndexError as e:
                     pass
@@ -134,7 +127,7 @@ def run_sum(threadnumber):
             df["RunID"] = main_df['RunID'].max() + 1
             df = pd.concat([main_df,df],ignore_index=True)
 
-        for c in ["initialx","initialy","initialz","initialPx","initialPy","initialPz","initialP","initialE","initialAngle","endx","endy","endz","endPx","endPy","endPz","endt","endP","endE"]:
+        for c in ["initialx","initialy","initialz","initialPx","initialPy","initialPz","initialP","initialE","initialAngle","endx","endy","endz","endt"]:
             df[c] = df[c].astype('float32')
         
         for c in ["EventID","TrackID","RunID"]:
@@ -148,6 +141,10 @@ def run_sum(threadnumber):
         
     except Exception as e:
         print(f"Running iteration {i} (Thread {threadnumber})... failed with exception",e)
+
+import sys
+run_sum(f"N{sys.argv[1]}")
+sys.exit()
 
 output_lock = threading.Lock()
 threads = []
