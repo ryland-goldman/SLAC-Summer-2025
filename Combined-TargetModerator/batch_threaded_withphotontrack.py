@@ -32,8 +32,11 @@ if conf=="mac":
 
 
 dims_50um = [9.975, 10.025, 50, "CombinedWithPhotonTrack.g4bl"]
+dims_100um = [9.95, 10.05, 100, "CombinedWithPhotonTrack100.g4bl"]
+dims_150um = [9.925, 10.075, 150, "CombinedWithPhotonTrack150.g4bl"]
 dims_200um = [9.9, 10.1, 200, "CombinedWithPhotonTrack200.g4bl"]
-dims = dims_200um
+dims_5mm = [7.5, 12.5, 5000, "CombinedWithPhotonTrack5000.g4bl"]
+dims = dims_5mm
 
 def momentum_to_ke(p_mev_c):
     m_e = 0.510998950 # MeV

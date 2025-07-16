@@ -22,11 +22,13 @@ pd.set_option('display.width', 150)
 import warnings
 warnings.filterwarnings("ignore")
 
-files = [a for a in os.listdir() if a[0:3]=="Out" and a[-3:]=="dat"]
-
-dims_50um = [9.975, 10.025, 50]
-dims_200um = [9.9, 10.1, 200]
+dims_50um = [9.975, 10.025, 50, "Data-50um"]
+dims_100um = [9.95, 10.05, 100, "Data-100um"]
+dims_150um = [9.925, 10.075, 150, "Data-150um"]
+dims_200um = [9.9, 10.1, 200, "Data-200um"]
 dims = dims_200um
+
+files = [f"{dims[3]}/{a}" for a in os.listdir(dims[3]) if a[0:3]=="Out" and a[-3:]=="dat"]
 
 threshold = 0.001 # 1 keV/c = thermalization
 
@@ -43,10 +45,15 @@ def run_file(file):
     except Exception:
         print(f"Err {file}")
         return
+    #df = df[df["initialE"] < 450]
+    #df = df[df["initialE"] > 550]
+    #print(df.sort_values("endz"))
+    n=df.shape[0]
     loc_all_initial_angle = list(df["initialAngle"])
     loc_all_initial_p = list(df["initialP"])
     df = df[df["endz"] > dims[0]]
     df = df[df["endz"] < dims[1]]
+    #print(n,df.shape[0],df.shape[0]/n,"\n")
     loc_end_x = list(df["endx"])
     loc_end_y = list(df["endy"])
     loc_end_z = list((df["endz"] - dims[0]) * 1000.0)
@@ -82,34 +89,63 @@ for i in files: run_file(i)
 
 #tasks.join()
 
-#end_z = np.where(np.array(end_z) < 1.0, 1.0, np.round(end_z))
 end_z = np.array(end_z)
 
 dist_to_border = np.abs(end_z - np.round(end_z / 25.0) * 25.0)
 out_prob = np.exp(-dist_to_border / 0.055)
-n_diff = 0
-diff_x = []
-diff_y = []
-diff_z = []
-layer_distance = 10
-for i in range(len(end_z)):
-    if out_prob[i] > np.random.uniform():
-        print(f"Particle diffused: ({end_x[i]}, {end_y[i]}, {end_z[i]})")
-        n_layers = end_z[i] // 25
-        diff_x.append(end_x[i])
-        diff_y.append(end_y[i])
-        diff_z.append(end_z[i]*0.001 + layer_distance * n_layers)
-        n_diff += 1
+std = [[],[],[]]
+rms = [[],[],[]]
+for j in range(100):
+    n_diff = 0
+    diff_x = []
+    diff_y = []
+    diff_z = []
+    layer_distance = 10
+    for i in range(len(end_z)):
+        if out_prob[i] > np.random.uniform():
+            n_layers = end_z[i] // 25.0
+            diff_x.append(end_x[i])
+            diff_y.append(end_y[i])
+            diff_z.append(end_z[i]*0.001 + layer_distance * n_layers)
+            print(f"Particle diffused: ({end_x[i]}, {end_y[i]}, {end_z[i]}) {n_layers}")
+            n_diff += 1
+    diff_x=np.array(diff_x)
+    diff_y=np.array(diff_y)
+    diff_z=np.array(diff_z)
+    std[0].append(np.std(diff_x))
+    std[1].append(np.std(diff_y))
+    std[2].append(np.std(diff_z))
+    rms[0].append(np.sqrt(np.mean(diff_x**2)))
+    rms[1].append(np.sqrt(np.mean(diff_y**2)))
+    rms[2].append(np.sqrt(np.mean(diff_z**2)))
 print(np.sum(out_prob),n_diff)
-print(len(end_z))
-print(len(all_initial_angle))
+n = int(np.max(pd.read_parquet(f"{dims[3]}/OutN0.dat")["RunID"])) * 1000 * len(os.listdir(dims[3]))
+print(f"{n} hit target")
+print(f"{len(all_initial_angle)} hit moderator, {round(len(all_initial_angle)/n,4)}")
+print(f"{len(end_z)} stop in moderator, {round(len(end_z)/len(all_initial_angle),4)}")
+print(f"{n_diff} reemitted, {round(np.sum(out_prob)/len(end_z),4)}")
+print(f"Moderator efficiency: {np.sum(out_prob)/len(all_initial_angle)}")
+print(f"System efficiency: {np.sum(out_prob)/n}")
+
+with open("xyz.pkl","wb") as f: pkl.dump([diff_x,diff_y,diff_z], f, protocol=pkl.HIGHEST_PROTOCOL)
+#print("Standard deviation",np.std(diff_x),np.std(diff_y),np.std(diff_z))
+#diff_x=np.array(diff_x)
+#diff_y=np.array(diff_y)
+#diff_z=np.array(diff_z)
+#print("RMS",np.sqrt(np.mean(diff_x**2)),np.sqrt(np.mean(diff_y**2)),np.sqrt(np.mean(diff_z**2)))
+print("Standard deviation",np.mean(std[0]),np.mean(std[1]),np.mean(std[2]))
+print("RMS",np.mean(rms[0]),np.mean(rms[1]),np.mean(rms[2]))
 
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
 ax.scatter(diff_x,diff_y,diff_z)
 plt.show()
 
-counts, bins = np.histogram(end_z,np.linspace(0,dims[2],dims[2]//5))
+makhovian = lambda x, m, z0: (m * np.pow(x, m-1) / np.pow(z0,m)) * np.exp( -np.pow(x/z0,m) )
+#plt.plot(np.linspace(0,50,100), makhovian(np.linspace(0,50,100), 1.828, 35.24))
+counts, bins = np.histogram(end_z,np.linspace(0,dims[2],dims[2]))
+counts = np.array(counts)
+counts = counts / len(all_initial_angle)
 plt.stairs(counts, bins)
 plt.title("Stopping Distribution")
 
