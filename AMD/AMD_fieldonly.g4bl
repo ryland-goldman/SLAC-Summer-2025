@@ -1,0 +1,17 @@
+physics FTFP_BERT_PEN minRangeCut=0.001
+randomseed Set $T
+
+beam ascii filename="TargetOutFiltered$T.txt" nEvents=1 particle=e+ z=0
+
+fieldlines exit=0  center=0,0,205 nLines=100
+param alpha=0.0258
+fieldexpr F radius=100 length=2000 factorB=5 nZ=200\
+Bz=if(z>=-1,1/(1+$alpha*z),0)\
+Br=if(z>=-1,$alpha*r/(2*(1+$alpha*z)*(1+$alpha*z)),0)
+place F z=0
+
+probefield inputFile="ProbeInput1.txt" outputFile="probeOutput1.txt"
+probefield inputFile="ProbeInput2.txt" outputFile="probeOutput2.txt"
+
+tubs AMD innerRadius=25 outerRadius=26 kill=1 length=500
+place AMD z=250

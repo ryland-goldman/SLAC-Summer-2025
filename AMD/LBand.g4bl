@@ -1,0 +1,15 @@
+physics FTFP_BERT_PEN
+randomseed Set $T
+
+beam ascii filename="AMDOut$T.txt" nEvents=100000 particle=e+ z=0
+#beam gaussian sigmaP=1 P=5 nEvents=10000 particle=e+
+
+reference particle=e+ referenceMomentum=10 beamZ=0 tolerance=0.1 tuneZ=0 beamT=1.7707279
+rfdevice RF1 frequency=1.428 maxGradient=15 irisRadius=30 innerRadius=97.5 innerLength=105 wallThick=5 win1Thick=0 win2Thick=0 collarThick=0 timingMethod=minEnergyGain fixEnergyGain=-0.9
+
+place RF1 copies=5 z=60
+
+fieldexpr field Bz=0.5 Br=0 width=1000 height=1000 length=1000
+place field z=0
+
+zntuple z=305 filename=LBandOut$T format=ascii

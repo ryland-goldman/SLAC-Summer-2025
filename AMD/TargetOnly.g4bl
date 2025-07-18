@@ -1,0 +1,23 @@
+physics FTFP_BERT_PEN minRangeCut=0.001
+randomseed Set $T
+
+param KE=100
+
+param nEvents=100000
+
+param M=0.511 KE=$KE
+param P=sqrt(($M+$KE)*($M+$KE)-$M*$M)
+beam gaussian meanMomentum=$P nEvents=$nEvents particle=e-
+
+box Target length=7 width=50 height=50 material=W
+place Target z=4
+
+# Input detector
+zntuple OutBeam z=8 filename=TargetOut$T format=ascii
+
+# Parameters
+param deltaChord=0.001
+param deltaIntersection=0.0001
+param deltaOneStep=0.0001
+param minStep=0.00005
+trackcuts kineticEnergyCut=0.00005
