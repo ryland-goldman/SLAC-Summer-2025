@@ -1,3 +1,7 @@
+#!/bin/sh
+# This script will configure the EC2 instance to start running
+# g4beamline's directory is /home/ubuntu/G4beamline-3.08/bin/g4bl
+
 rm *.txt
 rm *.dat
 rm *.csv
@@ -8,15 +12,8 @@ rm *.zip
 nano downloadedscript.py
 ./start-ramdisk.sh
 cd /tmp/ramdisk
-nano CombinedWithPhotonTrack5000.g4bl # change nEvents=1000
+nano GridModerator.g4bl
 nano s.sh
 chmod +x s.sh
 ulimit -n 100000
 screen
-
-# while true; do ./s.sh; done
-
-# zip -r out.zip Out*.dat
-
-# #!/bin/bash
-# for i in {0..191}; do python3 downloadedscript.py "$i" & done; wait

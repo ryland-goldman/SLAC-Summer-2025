@@ -1,0 +1,71 @@
+# Entire g4beamline setup
+# Meant for visualization
+
+physics FTFP_BERT_PEN minRangeCut=0.001
+
+randomseed Set 2
+
+param KE=100
+param nEvents=100000
+
+param M=0.511 KE=$KE
+param P=sqrt(($M+$KE)*($M+$KE)-$M*$M)
+beam gaussian meanMomentum=$P nEvents=$nEvents particle=e- firstEvent=40
+
+box Target length=7 width=100 height=100 material=W color=1.0,0.6,0.6
+place Target z=4
+
+param alpha=0.0258
+#fieldexpr F radius=100 length=2000 factorB=5 nZ=200\
+#Bz=if(z>=-1,if(z>=508,0.5,1/(1+$alpha*(z-0))),0)\
+#Br=if(z>=-1,if(z>=508,0,$alpha*r/(2*(1+$alpha*(z-0))*(1+$alpha*(z-0)))),0)
+#place F z=8
+
+tubs AMD innerRadius=25 outerRadius=65 kill=1 length=500 color=1.0,1.0,0.6
+place AMD z=258
+
+param TIncA=0.71503326 TIncB=0.56107747 TIncC=0.28501458 TIncD=0.56107278 TIncE=0.53346184 Grad=15
+reference particle=e+ referenceMomentum=10 beamZ=508 tolerance=0.1 tuneZ=0 beamT=1.7707279
+
+rfdevice RF1 frequency=1.428 maxGradient=$Grad irisRadius=30 innerRadius=97.5 innerLength=105 wallThick=5 win1Thick=0 win2Thick=0 collarThick=0 phaseAcc=270 timeOffset=0 timingAtZ=0 timeIncrement=$TIncA color=0.6,1.0,0.6
+
+place RF1 z=568
+
+rfdevice RF2 frequency=1.428 maxGradient=$Grad irisRadius=30 innerRadius=97.5 innerLength=105 wallThick=5 win1Thick=0 win2Thick=0 collarThick=0 phaseAcc=270 timeOffset=0 timingAtZ=0 timeIncrement=$TIncB color=0.6,1.0,0.6
+place RF2 z=683
+
+rfdevice RF3 frequency=1.428 maxGradient=$Grad irisRadius=30 innerRadius=97.5 innerLength=105 wallThick=5 win1Thick=0 win2Thick=0 collarThick=0 phaseAcc=270 timeOffset=0 timingAtZ=0 timeIncrement=$TIncC color=0.6,1.0,0.6
+place RF3 z=798
+
+rfdevice RF4 frequency=1.428 maxGradient=$Grad irisRadius=30 innerRadius=97.5 innerLength=105 wallThick=5 win1Thick=0 win2Thick=0 collarThick=0 phaseAcc=270 timeOffset=0 timingAtZ=0 timeIncrement=$TIncD color=0.6,1.0,0.6
+place RF4 z=913
+
+rfdevice RF5 frequency=1.428 maxGradient=$Grad irisRadius=30 innerRadius=97.5 innerLength=105 wallThick=5 win1Thick=0 win2Thick=0 collarThick=0 phaseAcc=270 timeOffset=0 timingAtZ=0 timeIncrement=$TIncE color=0.6,1.0,0.6
+place RF5 z=1028
+
+#fieldexpr field Bz=0.5 Br=0 radius=200 length=600
+#place field z=708
+
+param deltaChord=0.001
+param deltaIntersection=0.0001
+param deltaOneStep=0.0001
+param minStep=0.00005
+trackcuts kineticEnergyCut=0.00005
+
+#g4ui when=4 "/vis/viewer/set/sectionPlane on 0 0 0 cm 1 0 0"
+g4ui when=4 "/vis/viewer/addCutawayPlane 0 0 0 cm 1 0 0"
+#g4ui when=4 “/vis/viewer/set/background 1 1 1”
+g4ui when=4 "/vis/scene/endOfEventAction accumulate 1000"
+
+fieldlines exit=0  center=0,0,400 nLines=10 minField=1e-6
+fieldlines exit=0  center=0,0,800 nLines=10 minField=1e-6
+
+box Moderator length=0.050 width=100 height=100 material=W color=1.0,0.6,0.6
+place Moderator z=1089
+
+g4ui when=4 "/vis/viewer/set/background 1 1 1"
+particlecolor gamma=
+
+beamlossntuple DetKill filename=Out format=ascii
+
+param fieldVoxels=50,50,200
