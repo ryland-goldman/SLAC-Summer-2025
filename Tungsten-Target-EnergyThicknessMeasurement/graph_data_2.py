@@ -2,7 +2,7 @@
 """
 this was entirely generated with chatgpt
 
-
+(This is for only one material)
 
 Draws TWO stacked panels from batch-scan data:
 
