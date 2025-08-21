@@ -4,7 +4,7 @@ randomseed Set $T
 beam ascii filename="TargetOutFiltered$T.txt" nEvents=100000 particle=e+ z=0
 
 fieldlines exit=0  center=0,0,205 nLines=100
-param alpha=0.0258
+param alpha=0.018
 fieldexpr F radius=100 length=2000 factorB=5 nZ=200\
 Bz=if(z>=-1,1/(1+$alpha*z),0)\
 Br=if(z>=-1,$alpha*r/(2*(1+$alpha*z)*(1+$alpha*z)),0)

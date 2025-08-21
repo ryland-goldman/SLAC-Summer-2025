@@ -1,0 +1,26 @@
+physics FTFP_BERT_PEN #minRangeCut=0.001
+#randomseed Set $T
+
+#param M=0.511 KE=0.500
+#param P=sqrt(($M+$KE)*($M+$KE)-$M*$M)
+#beam gaussian meanMomentum=$P nEvents=100000 particle=e+
+
+#beam ascii filename="LBandOut$T.txt" nEvents=100000 particle=e+ z=0
+beam ascii filename="LBandOut_Edited_1.txt" nEvents=100 particle=e+ z=0
+
+#box Moderator material=W width=100 height=100 length=0.050
+#tubs Moderator1 material=W innerRadius=0 outerRadius=0.010 length=10 maxStep=0.001
+tubs Moderator2 material=W innerRadius=0 outerRadius=0.010 length=10 maxStep=0.001
+#tubs Moderator3 material=W innerRadius=0 outerRadius=0.010 length=10 maxStep=0.001
+#place Moderator1 z=0.010 y=0.010 rotation=Y90
+place Moderator2 z=0.010 rotation=X90
+#place Moderator3 z=0.010 y=-0.010 rotation=Y90
+
+trace nTrace=10 format=ascii filename=Track%d.txt
+
+# Parameters
+param deltaChord=0.001
+param deltaIntersection=0.0001
+param deltaOneStep=0.0001
+param minStep=0.00005
+trackcuts kineticEnergyCut=0.00005

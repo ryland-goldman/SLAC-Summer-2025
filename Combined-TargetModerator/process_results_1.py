@@ -26,7 +26,15 @@ dims_50um = [9.975, 10.025, 50, "Data-50um"]
 dims_100um = [9.95, 10.05, 100, "Data-100um"]
 dims_150um = [9.925, 10.075, 150, "Data-150um"]
 dims_200um = [9.9, 10.1, 200, "Data-200um"]
-dims = dims_200um
+dims_5mm = [7.5, 12.5, 5000, "Data-5mm"]
+dims = dims_50um
+
+def momentum_to_ke(p_mevc):
+    m_e_MeV = 0.510998950
+    p = np.asarray(p_mevc, dtype=np.float64)
+    energy_total = np.sqrt(p**2 + m_e_MeV**2)      # E  = sqrt((pc)² + (m c²)²); c factors cancel in units of MeV/c and MeV
+    kinetic_energy = energy_total - m_e_MeV        # T  = E − m c²
+    return kinetic_energy
 
 files = [f"{dims[3]}/{a}" for a in os.listdir(dims[3]) if a[0:3]=="Out" and a[-3:]=="dat"]
 
@@ -49,6 +57,7 @@ def run_file(file):
     #df = df[df["initialE"] > 550]
     #print(df.sort_values("endz"))
     n=df.shape[0]
+    df["initialP"] = momentum_to_ke(df["initialP"])
     loc_all_initial_angle = list(df["initialAngle"])
     loc_all_initial_p = list(df["initialP"])
     df = df[df["endz"] > dims[0]]
@@ -107,7 +116,7 @@ for j in range(100):
             diff_x.append(end_x[i])
             diff_y.append(end_y[i])
             diff_z.append(end_z[i]*0.001 + layer_distance * n_layers)
-            print(f"Particle diffused: ({end_x[i]}, {end_y[i]}, {end_z[i]}) {n_layers}")
+            #print(f"Particle diffused: ({end_x[i]}, {end_y[i]}, {end_z[i]}) {n_layers}")
             n_diff += 1
     diff_x=np.array(diff_x)
     diff_y=np.array(diff_y)
@@ -143,20 +152,26 @@ plt.show()
 
 makhovian = lambda x, m, z0: (m * np.pow(x, m-1) / np.pow(z0,m)) * np.exp( -np.pow(x/z0,m) )
 #plt.plot(np.linspace(0,50,100), makhovian(np.linspace(0,50,100), 1.828, 35.24))
-counts, bins = np.histogram(end_z,np.linspace(0,dims[2],dims[2]))
+#counts, bins = np.histogram(end_z,np.linspace(0,dims[2],dims[2]))
+counts, bins = np.histogram(end_z,np.linspace(0,50,50))
 counts = np.array(counts)
 counts = counts / len(all_initial_angle)
+counts *= 1e4
 plt.stairs(counts, bins)
-plt.title("Stopping Distribution")
+#plt.title("Stopping Distribution")
+plt.xlabel("Penetration Depth (µm)")
+plt.ylabel("Positrons Stopped / $10^4$ (µm$^{-1}$)")
 
 plt.show()
 
 fig, axs = plt.subplots(2, 1, figsize=(6, 10))
-counts1, bins1 = np.histogram(initial_p,bins=np.linspace(0,10,50))
-counts2, bins2 = np.histogram(all_initial_p,bins=np.linspace(0,10,50))
+counts1, bins1 = np.histogram(initial_p,bins=np.linspace(0,2,41))
+counts2, bins2 = np.histogram(all_initial_p,bins=np.linspace(0,2,41))
 ratio = counts1 / counts2
+print(repr(ratio))
+print(repr(bins1))
 axs[0].stairs(ratio, bins1)
-axs[0].set_xlabel("Initial Momentum (MeV/c)")
+axs[0].set_xlabel("Initial Kinetic Energy (MeV)")
 axs[0].set_ylabel("Fraction Stopped")
 counts1, bins1 = np.histogram(initial_angle,bins=np.linspace(0,90,90))
 counts2, bins2 = np.histogram(all_initial_angle,bins=np.linspace(0,90,90))

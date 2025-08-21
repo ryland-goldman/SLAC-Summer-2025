@@ -1,0 +1,22 @@
+physics FTFP_BERT_PEN #minRangeCut=0.001
+randomseed Set $T
+
+param M=0.511 KE=$KE
+param P=sqrt(($M+$KE)*($M+$KE)-$M*$M)
+beam gaussian meanMomentum=$P nEvents=100000 particle=e+ sigmaXp=0.2 sigmaYp=0.2
+
+tubs Moderator material=W innerRadius=0 outerRadius=100 length=0.05 maxStep=0.001
+place Moderator z=1
+
+# Kill detector
+zntuple z=0.95 filename=data-dir/ModeratorOutC$T format=ascii
+beamlossntuple DetKill filename=data-dir/ModeratorOut$T format=ascii
+newparticlentuple DetKill2 filename=data-dir/ModeratorOutB$T format=ascii
+
+
+# Parameters
+param deltaChord=0.0001
+param deltaIntersection=0.00001
+param deltaOneStep=0.00001
+param minStep=0.00005
+trackcuts kineticEnergyCut=0.00005

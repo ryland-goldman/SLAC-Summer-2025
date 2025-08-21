@@ -24,7 +24,7 @@ dims = dims_50um
 electron_mass = 0.511  # MeV/c^2
 event_count = 1000000
 
-files = [a for a in os.listdir() if a[0:3]=="Out"]
+files = [f"../AMD/data-amd/{a}" for a in os.listdir("../AMD/data-amd") if a[0:3]=="Out"]
 
 def momentum_to_ke(p_mev_c):
     m_e = 0.510998950 # MeV

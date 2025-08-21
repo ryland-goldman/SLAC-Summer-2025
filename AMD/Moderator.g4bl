@@ -1,43 +1,24 @@
-physics FTFP_BERT_PEN minRangeCut=0.001
+physics FTFP_BERT_PEN #minRangeCut=0.001
 randomseed Set $T
 
-param KE=100
+#param M=0.511 KE=0.500
+#param P=sqrt(($M+$KE)*($M+$KE)-$M*$M)
+#beam gaussian meanMomentum=$P nEvents=100000 particle=e+
 
-beam ascii filename="LBandOut$T.txt" nEvents=100000 particle=e+ z=0
+#beam ascii filename="TargetOutFiltered$T.txt" nEvents=100000 particle=e+ z=0
 
-#box Border1 material=W width=50 height=50 length=7
-box Border2 material=W width=50 height=50 length=7
-box Border3 material=W width=7 height=50 length=64
-box Border4 material=W width=7 height=50 length=64
+#beam ascii filename="LBandOut$T.txt" nEvents=100000 particle=e+ z=0
+beam ascii filename="LBandOut_Edited_$T.txt" nEvents=100000 particle=e+ z=0
 
-#place Border1 z=4.5
-place Border2 z=61.5
-place Border3 z=33 x=28.5
-place Border4 z=33 x=-28.5
-
-box Moderator1 material=W width=50 height=50 length=0.025
-box Moderator2 material=W width=50 height=50 length=0.025
-box Moderator3 material=W width=50 height=50 length=0.025
-box Moderator4 material=W width=50 height=50 length=0.025
-
-place Moderator1 z=18
-place Moderator2 z=28
-place Moderator3 z=38
-place Moderator4 z=48
-
-box Moderator9 material=W width=0.025 height=50 length=50
-box Moderator10 material=W width=0.025 height=50 length=50
-box Moderator11 material=W width=0.025 height=50 length=50
-box Moderator12 material=W width=0.025 height=50 length=50
-
-place Moderator9 z=33 x=15
-place Moderator10 z=33 x=5
-place Moderator11 z=33 x=-5
-place Moderator12 z=33 x=-15
+#box Moderator material=W width=100 height=100 length=0.050
+tubs Moderator material=W innerRadius=0 outerRadius=100 length=0.001 maxStep=0.001
+place Moderator z=1
 
 # Kill detector
+zntuple z=0.95 filename=ModeratorOutC$T format=ascii
 beamlossntuple DetKill filename=ModeratorOut$T format=ascii
 newparticlentuple DetKill2 filename=ModeratorOutB$T format=ascii
+
 
 # Parameters
 param deltaChord=0.001
@@ -45,3 +26,6 @@ param deltaIntersection=0.0001
 param deltaOneStep=0.0001
 param minStep=0.00005
 trackcuts kineticEnergyCut=0.00005
+
+#fieldexpr field Bz=0.5 Br=0 Ez=0.001 Er=0 width=1000 height=1000 length=1000
+#place field z=0

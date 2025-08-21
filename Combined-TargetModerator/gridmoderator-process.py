@@ -32,6 +32,14 @@ files = [f"{loc}/{a}" for a in os.listdir(loc) if a[0:3]=="Out" and a[-3:]=="dat
 
 threshold = 0.001 # 1 keV/c = thermalization
 
+def momentum_to_ke(p_mevc):
+    m_e_MeV = 0.510998950
+    p = np.asarray(p_mevc, dtype=np.float64)
+    energy_total = np.sqrt(p**2 + m_e_MeV**2)      # E  = sqrt((pc)² + (m c²)²); c factors cancel in units of MeV/c and MeV
+    kinetic_energy = energy_total - m_e_MeV        # T  = E − m c²
+    return kinetic_energy
+
+
 end_x = []
 end_y = []
 end_z = []
@@ -47,6 +55,7 @@ def run_file(file):
         return
     #df = df[df["initialE"] < 450]
     #df = df[df["initialE"] > 550]
+    df["initialP"] = momentum_to_ke(df["initialP"])
     loc_all_initial_angle = list(df["initialAngle"])
     loc_all_initial_p = list(df["initialP"])
     df = df[df["endz"] > 7.9]
@@ -102,6 +111,7 @@ for j in range(100):
     diff_y=np.array(diff_y)
     diff_z=np.array(diff_z)
     diff_r=np.sqrt(diff_x**2 + diff_y**2)
+    if np.std(diff_y) > 20: continue
     std[0].append(np.std(diff_x))
     std[1].append(np.std(diff_y))
     std[2].append(np.std(diff_z))
@@ -144,7 +154,7 @@ error_bar = brightness * math.sqrt( (dN/N)**2 + (dsigma_x/sigma_x)**2 + (dsigma_
 print("Brightness:",brightness,"pm",error_bar)
 print([grid[0],grid[1],brightness,error_bar])
 import sys
-sys.exit()
+#sys.exit()
 
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
@@ -176,8 +186,10 @@ fig, axs = plt.subplots(2, 1, figsize=(6, 10))
 counts1, bins1 = np.histogram(initial_p,bins=np.linspace(0,10,50))
 counts2, bins2 = np.histogram(all_initial_p,bins=np.linspace(0,10,50))
 ratio = counts1 / counts2
+print(ratio)
+print(bins1)
 axs[0].stairs(ratio, bins1)
-axs[0].set_xlabel("Initial Momentum (MeV/c)")
+axs[0].set_xlabel("Initial KE (MeV)")
 axs[0].set_ylabel("Fraction Stopped")
 counts1, bins1 = np.histogram(initial_angle,bins=np.linspace(0,90,90))
 counts2, bins2 = np.histogram(all_initial_angle,bins=np.linspace(0,90,90))

@@ -1,15 +1,36 @@
 physics FTFP_BERT_PEN
 randomseed Set $T
 
-beam ascii filename="AMDOut$T.txt" nEvents=100000 particle=e+ z=0
-#beam gaussian sigmaP=1 P=5 nEvents=10000 particle=e+
+# parameters to be adjusted by the optimization script
+#param TIncA=0.71503326 TIncB=0.56107747 TIncC=0.28501458 TIncD=0.56107278 TIncE=0.53346184 Grad=15
+#param TIncA=0.18260363 TIncB=0.53550883 TIncC=0.08947806 TIncD=0.13582262 TIncE=0.64976482 Grad=15
+param TIncA=0.7323311795332053 TIncB=0.15928334736005687 TIncC=0.17226662063498446 TIncD=0.36192690735701005 TIncE=0.27520206783089246 Grad=15
+
+beam ascii filename="AMDOut_Edited_$T.txt" nEvents=100000 particle=e+ z=0
+#beam gaussian sigmaP=1 P=5 nEvents=1500 particle=e+
 
 reference particle=e+ referenceMomentum=10 beamZ=0 tolerance=0.1 tuneZ=0 beamT=1.7707279
-rfdevice RF1 frequency=1.428 maxGradient=15 irisRadius=30 innerRadius=97.5 innerLength=105 wallThick=5 win1Thick=0 win2Thick=0 collarThick=0 timingMethod=minEnergyGain fixEnergyGain=-0.9
+rfdevice RF1 frequency=1.3 maxGradient=$Grad irisRadius=30 innerRadius=88.2698854459 innerLength=105 wallThick=5 win1Thick=0 win2Thick=0 collarThick=0 phaseAcc=270 timeOffset=0 timingAtZ=0 timeIncrement=$TIncA
 
-place RF1 copies=5 z=60
+place RF1 z=60
+#zntuple z=117.5 filename=LBandOut_RF1_$T format=ascii
+
+rfdevice RF2 frequency=1.3 maxGradient=$Grad irisRadius=30 innerRadius=88.2698854459 innerLength=105 wallThick=5 win1Thick=0 win2Thick=0 collarThick=0 phaseAcc=270 timeOffset=0 timingAtZ=0 timeIncrement=$TIncB
+place RF2 z=175
+#zntuple z=232.5 filename=LBandOut_RF2_$T format=ascii
+
+rfdevice RF3 frequency=1.3 maxGradient=$Grad irisRadius=30 innerRadius=88.2698854459 innerLength=105 wallThick=5 win1Thick=0 win2Thick=0 collarThick=0 phaseAcc=270 timeOffset=0 timingAtZ=0 timeIncrement=$TIncC
+place RF3 z=290
+#zntuple z=347.5 filename=LBandOut_RF3_$T format=ascii
+
+rfdevice RF4 frequency=1.3 maxGradient=$Grad irisRadius=30 innerRadius=88.2698854459 innerLength=105 wallThick=5 win1Thick=0 win2Thick=0 collarThick=0 phaseAcc=270 timeOffset=0 timingAtZ=0 timeIncrement=$TIncD
+place RF4 z=405
+#zntuple z=462.5 filename=LBandOut_RF4_$T format=ascii
+
+rfdevice RF5 frequency=1.3 maxGradient=$Grad irisRadius=30 innerRadius=88.2698854459 innerLength=105 wallThick=5 win1Thick=0 win2Thick=0 collarThick=0 phaseAcc=270 timeOffset=0 timingAtZ=0 timeIncrement=$TIncE
+place RF5 z=520
 
 fieldexpr field Bz=0.5 Br=0 width=1000 height=1000 length=1000
 place field z=0
 
-zntuple z=305 filename=LBandOut$T format=ascii
+zntuple z=575 filename=LBandOut_$T format=ascii

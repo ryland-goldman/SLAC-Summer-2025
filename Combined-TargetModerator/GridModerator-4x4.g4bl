@@ -9,30 +9,30 @@ param M=0.511 KE=$KE
 param P=sqrt(($M+$KE)*($M+$KE)-$M*$M)
 beam gaussian meanMomentum=$P nEvents=$nEvents particle=e-
 
-box Border1 material=W width=50 height=50 length=7
-box Border2 material=W width=50 height=50 length=7
-box Border3 material=W width=7 height=50 length=64
-box Border4 material=W width=7 height=50 length=64
+box Border1 material=W width=50 height=50 length=7 color=0.2,0.2,0.2
+box Border2 material=W width=50 height=50 length=7 color=0.2,0.2,0.2
+box Border3 material=W width=7 height=50 length=64 color=0.2,0.2,0.2
+box Border4 material=W width=7 height=50 length=64 color=0.2,0.2,0.2
 
 place Border1 z=4.5
 place Border2 z=61.5
 place Border3 z=33 x=28.5
 place Border4 z=33 x=-28.5
 
-box Moderator1 material=W width=50 height=50 length=0.025
-box Moderator2 material=W width=50 height=50 length=0.025
-box Moderator3 material=W width=50 height=50 length=0.025
-box Moderator4 material=W width=50 height=50 length=0.025
+box Moderator1 material=W width=50 height=50 length=0.025 color=0.2,0.2,0.2
+box Moderator2 material=W width=50 height=50 length=0.025 color=0.2,0.2,0.2
+box Moderator3 material=W width=50 height=50 length=0.025 color=0.2,0.2,0.2
+box Moderator4 material=W width=50 height=50 length=0.025 color=0.2,0.2,0.2
 
 place Moderator1 z=18
 place Moderator2 z=28
 place Moderator3 z=38
 place Moderator4 z=48
 
-box Moderator9 material=W width=0.025 height=50 length=50
-box Moderator10 material=W width=0.025 height=50 length=50
-box Moderator11 material=W width=0.025 height=50 length=50
-box Moderator12 material=W width=0.025 height=50 length=50
+box Moderator9 material=W width=0.025 height=50 length=50 color=0.2,0.2,0.2
+box Moderator10 material=W width=0.025 height=50 length=50 color=0.2,0.2,0.2
+box Moderator11 material=W width=0.025 height=50 length=50 color=0.2,0.2,0.2
+box Moderator12 material=W width=0.025 height=50 length=50 color=0.2,0.2,0.2
 
 place Moderator9 z=33 x=15
 place Moderator10 z=33 x=5
@@ -45,6 +45,9 @@ zntuple DetNeg5 z=10 filename=DetNeg5$ThreadNumber format=ascii
 # Kill detector
 beamlossntuple DetKill filename=DetKill$ThreadNumber format=ascii
 newparticlentuple DetKill2 filename=NewParticles$ThreadNumber format=ascii
+
+g4ui when=4 "/vis/viewer/set/background 1 1 1"
+particlecolor gamma=
 
 # Parameters
 param deltaChord=0.001

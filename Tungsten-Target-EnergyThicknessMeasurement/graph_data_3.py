@@ -47,6 +47,7 @@ datasets = [('Ta', df_ta, 3.5), ('W', df_w, 3.3)]  # (label, dataframe, X0)
 for label, df, X0 in datasets:
     group = df[df['Energy'] == energy].sort_values('Thickness')
     if not group.empty:
+        color = 'darkblue' if label == 'Ta' else 'darkred'
         style = {'marker': 'o'}
 
         y     = group['Count'] / 100_000.0
@@ -55,7 +56,8 @@ for label, df, X0 in datasets:
         ax.plot(group['Thickness'], y,
                 label=label,
                 marker=style['marker'],
-                linestyle='-')
+                linestyle='-',
+                color=color)
 
         ax.errorbar(group['Thickness'], y,
                     yerr=y_err,
@@ -69,6 +71,39 @@ for label, df, X0 in datasets:
         optimal_points.append((energy,
                                opt_row['Thickness'],
                                opt_row['Count'] / 100_000.0))
+
+        # Print optimal thickness and 90% yield range for this material at this energy
+        opt_thickness = float(opt_row['Thickness'])
+        opt_yield = float(opt_row['Count']) / 100_000.0
+        threshold = 0.9 * opt_yield
+        # Boolean mask where yield >= 90% of optimal
+        mask_90 = (group['Count'] / 100_000.0) >= threshold
+        if mask_90.any():
+            t_range = group.loc[mask_90, 'Thickness']
+            t_min = float(t_range.min())
+            t_max = float(t_range.max())
+            print(f"{label}: optimal thickness = {opt_thickness:.3f} mm; 90% range = [{t_min:.3f}, {t_max:.3f}] mm")
+        else:
+            print(f"{label}: optimal thickness = {opt_thickness:.3f} mm; 90% range = [n/a]")
+
+        ax.axvline(opt_thickness,
+                   color=color,
+                   linestyle='--',
+                   linewidth=1,
+                   alpha=0.8,
+                   label=f'{label} optimal')
+
+        # Add horizontal error bar to represent 90% range
+        if mask_90.any():
+            y_pos = 0.3 * opt_yield
+            if label == 'W':
+                y_pos = 0.2 * opt_yield
+            ax.errorbar(opt_thickness, y_pos,
+                        xerr=[[opt_thickness - t_min], [t_max - opt_thickness]],
+                        fmt='none',
+                        ecolor=color,
+                        capsize=3,
+                        alpha=0.8)
 
 # Dashed polyline through optimal points
 opt_xy = np.array([[p[1], p[2]] for p in optimal_points])

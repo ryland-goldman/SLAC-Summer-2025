@@ -23,6 +23,7 @@ div_target = angular_divergence(df_target["Px"], df_target["Py"], df_target["Pz"
 div_amd = angular_divergence(df_amd["Px"], df_amd["Py"], df_amd["Pz"])
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+plt.rcParams.update({'font.size': 14})
 
 vmin = min(div_target.min(), div_amd.min()) if SAME_COLOR_SCALE else None
 vmax = 1000 if SAME_COLOR_SCALE else None
@@ -32,32 +33,56 @@ sc0 = axes[0].scatter(
     df_target["x"], df_target["y"],
     c=div_target, cmap='RdBu_r', s=1, vmin=vmin, vmax=vmax, alpha=0.5
 )
-axes[0].set_title("Target")
-axes[0].set_xlabel("x Position (mm)")
-axes[0].set_ylabel("y Position (mm)")
+axes[0].set_title("Before AMD")
+axes[0].set_xlabel("x (mm)", fontsize=16)
+axes[0].set_ylabel("y (mm)", fontsize=16)
 cbar0 = plt.colorbar(sc0, ax=axes[0])
-cbar0.set_label("Angular Divergence (Target)")
+cbar0.set_label("Angular Divergence (mrad)")
+axes[0].set_xlim(-75, 75)
+axes[0].set_ylim(-75, 75)
 
 # Second scatter (AMD)
 sc1 = axes[1].scatter(
     df_amd["x"], df_amd["y"],
     c=div_amd, cmap='RdBu_r', s=1, vmin=vmin, vmax=vmax, alpha=0.5
 )
-axes[1].set_title("AMD")
-axes[1].set_xlabel("x Position (mm)")
-axes[1].set_ylabel("y Position (mm)")
-axes[1].set_xlim(-50, 50)
-axes[1].set_ylim(-50, 50)
+axes[1].set_title("After AMD")
+axes[1].set_xlabel("x (mm)", fontsize=16)
+axes[1].set_ylabel("y (mm)", fontsize=16)
+axes[1].set_xlim(-75, 75)
+axes[1].set_ylim(-75, 75)
 cbar1 = plt.colorbar(sc1, ax=axes[1])
-cbar1.set_label("Angular Divergence (AMD)")
-
-# Histogram of Angular Divergence (AMD)
-fig_hist, ax_hist = plt.subplots(figsize=(6, 4))
-ax_hist.hist(div_amd, bins=np.linspace(0,200,100), color='steelblue', edgecolor='black', alpha=0.7)
-ax_hist.set_title("Histogram of Angular Divergence (AMD)")
-ax_hist.set_xlabel("Angular Divergence (mrad)")
-ax_hist.set_ylabel("Counts")
-
+cbar1.set_label("Angular Divergence (mrad)")
 
 plt.tight_layout()
-plt.show()
+plt.savefig("angular_divergence_scatter.png", dpi=300)
+
+# Histogram of Angular Divergence (Target and AMD)
+fig_hist, ax_hist = plt.subplots(figsize=(6, 4))
+bins = np.linspace(0, 500, 500)
+
+ax_hist.hist(
+    div_target,
+    bins=bins,
+    color='darkred',
+    edgecolor='black',
+    alpha=0.5,
+    label='After Target',
+    weights=np.ones_like(div_target) / len(div_target)
+)
+ax_hist.hist(
+    div_amd,
+    bins=bins,
+    color='steelblue',
+    edgecolor='black',
+    alpha=0.5,
+    label='After AMD',
+    weights=np.ones_like(div_amd) / len(div_amd)
+)
+
+ax_hist.set_xlabel("Angular Divergence (mrad)", fontsize=16)
+ax_hist.set_ylabel("Density of Particles (1/mrad)", fontsize=16)
+ax_hist.legend()
+
+plt.tight_layout()
+plt.savefig("angular_divergence_histogram.png", dpi=300)
